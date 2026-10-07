@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1030">
+<title>English Word Hunter</title>
+<style>
+/* =====================================================================
+   2. CSS  —  ธีม 3D: perspective, preserve-3d, keycap buttons, tilt cards
+   ===================================================================== */
+:root{
+  --bg1:#0b1030; --bg2:#1a1f5e;
+  --txt:#fff; --mut:#b8c0ff;
+  --cyan:#22d3ee; --pink:#f472b6; --yellow:#fbbf24; --green:#34d399; --red:#fb7185; --purple:#a78bfa;
+  --glass:rgba(255,255,255,.09); --glass-b:rgba(255,255,255,.2);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:"Segoe UI","Noto Sans Thai","Leelawadee UI",Tahoma,system-ui,-apple-system,sans-serif;
+  color:var(--txt);
+  background:
+    radial-gradient(1100px 700px at 15% -10%, #4a2fb0 0%, transparent 60%),
+    radial-gradient(900px 600px at 105% 8%, #0e7490 0%, transparent 55%),
+    linear-gradient(180deg,var(--bg1),var(--bg2));
+  background-attachment:fixed;
+  overflow-x:hidden;
+  touch-action:manipulation;
+}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+#bg,#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#bg{z-index:0}
+#fx{z-index:80}
+#app{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:980px;margin:0 auto;padding:14px 14px 40px}
+.center{text-align:center;margin-top:18px}
+.small{font-size:.85rem}
+.glass{
+  background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  border:1.5px solid var(--glass-b);
+  border-radius:24px;
+  box-shadow:0 18px 40px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+
+/* ---------- Top bar ---------- */
+#topbar{
+  position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:10px 14px;background:rgba(10,12,45,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.brand{display:flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;padding:4px;text-align:left}
+.brand-ico{font-size:1.7rem;filter:drop-shadow(0 4px 6px rgba(0,0,0,.5))}
+.brand-txt{font-weight:900;font-size:.72rem;letter-spacing:.14em;line-height:1.15;background:linear-gradient(90deg,var(--cyan),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tb-stats{display:flex;align-items:center;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-weight:800;white-space:nowrap}
+.chip.bump{animation:pop .35s}
+.lvchip{flex-direction:column;align-items:stretch;gap:3px;padding:5px 12px}
+.lvl{font-size:.78rem;letter-spacing:.06em}
+.mini-bar{height:6px;width:64px;border-radius:9px;background:rgba(0,0,0,.35);overflow:hidden}
+.mini-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .5s}
+.icon-btn{width:42px;height:42px;border-radius:14px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.12);cursor:pointer;font-size:1.15rem;box-shadow:0 4px 0 rgba(0,0,0,.3);transition:transform .08s}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+
+/* ---------- 3D keycap buttons ---------- */
+.btn{
+  --b1:#4ade80;--b2:#16a34a;--d:#166534;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:54px;padding:12px 22px;border:0;border-radius:18px;cursor:pointer;
+  font-weight:800;font-size:1rem;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25);
+  background:linear-gradient(180deg,var(--b1),var(--b2));
+  box-shadow:0 6px 0 var(--d),0 14px 22px rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.35);
+  transition:transform .08s,box-shadow .08s,filter .2s;margin-bottom:6px;
+}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.btn:active{transform:translateY(5px);box-shadow:0 1px 0 var(--d),0 4px 8px rgba(0,0,0,.3),inset 0 2px 0 rgba(255,255,255,.3)}
+.btn:disabled{filter:grayscale(.85) brightness(.75);cursor:not-allowed;transform:none}
+.btn.big{min-height:64px;font-size:1.2rem;width:100%}
+.btn.small{min-height:42px;padding:8px 16px;font-size:.9rem;border-radius:14px}
+.btn-green{--b1:#4ade80;--b2:#16a34a;--d:#166534}
+.btn-blue{--b1:#38bdf8;--b2:#2563eb;--d:#1e3a8a}
+.btn-purple{--b1:#c084fc;--b2:#7c3aed;--d:#4c1d95}
+.btn-pink{--b1:#f9a8d4;--b2:#db2777;--d:#831843}
+.btn-gold{--b1:#fde047;--b2:#f59e0b;--d:#92400e;color:#3b2200;text-shadow:none}
+.btn-danger{--b1:#fb7185;--b2:#dc2626;--d:#7f1d1d}
+.btn-ghost{--b1:rgba(255,255,255,.22);--b2:rgba(255,255,255,.1);--d:rgba(0,0,0,.4)}
+
+/* ---------- Screens ---------- */
+.screen{display:none}
+.screen.active{display:block;animation:screenIn .5s ease both}
+@keyframes screenIn{from{opacity:0;transform:perspective(900px) rotateX(8deg) translateY(24px)}to{opacity:1;transform:none}}
+
+/* ---------- Welcome + 3D cube ---------- */
+.welcome{max-width:520px;margin:0 auto;padding:30px 18px 50px;text-align:center}
+.cube-wrap{--s:150px;width:var(--s);height:var(--s);margin:26px auto 36px;perspective:900px}
+.cube{position:relative;width:100%;height:100%;transform-style:preserve-3d;animation:spinCube 16s linear infinite}
+.cube .f{position:absolute;inset:0;display:grid;place-items:center;font-size:62px;border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(120,140,255,.15));
+  border:2px solid rgba(255,255,255,.45);box-shadow:inset 0 0 30px rgba(255,255,255,.2),0 0 30px rgba(34,211,238,.25)}
+.f1{transform:translateZ(75px)}
+.f2{transform:rotateY(90deg) translateZ(75px)}
+.f3{transform:rotateY(180deg) translateZ(75px)}
+.f4{transform:rotateY(-90deg) translateZ(75px)}
+.f5{transform:rotateX(90deg) translateZ(75px)}
+.f6{transform:rotateX(-90deg) translateZ(75px)}
+@keyframes spinCube{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+.title{margin:0;font-size:clamp(2.1rem,9vw,3.4rem);line-height:1.02;font-weight:900;letter-spacing:.05em;
+  text-shadow:0 3px 0 #3b2a8f,0 6px 0 #2b1d6e,0 12px 24px rgba(0,0,0,.5)}
+.title span{background:linear-gradient(90deg,var(--cyan),var(--pink),var(--yellow));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 0 #2b1d6e)}
+.sub{margin:14px 0 4px;font-size:1.15rem;font-weight:700;color:var(--mut)}
+.tag{margin:0 0 22px;font-style:italic;color:var(--yellow);font-weight:700}
+.namebox{padding:20px;text-align:left}
+.namebox label{display:block;font-weight:800;margin-bottom:8px;color:var(--mut)}
+.namebox input{width:100%;padding:15px 16px;font-size:1.15rem;font-weight:700;border-radius:16px;border:2px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);color:#fff;outline:none;margin-bottom:16px;box-shadow:inset 0 4px 10px rgba(0,0,0,.35)}
+.namebox input:focus{border-color:var(--cyan)}
+.namebox input.err{animation:shake .4s;border-color:var(--red)}
+.hintline{margin-top:18px;color:var(--mut);font-size:.9rem}
+
+/* ---------- Home ---------- */
+.player-card{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:8px}
+.avatar{flex:none;width:64px;height:64px;border-radius:22px;display:grid;place-items:center;font-size:1.9rem;font-weight:900;
+  background:linear-gradient(145deg,var(--pink),var(--purple));box-shadow:0 6px 0 #5b21b6,0 12px 18px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.4);transform:rotateX(10deg) rotateY(-10deg)}
+.pc-info{flex:1;min-width:0}
+.pc-name{font-size:1.25rem;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-sub{color:var(--mut);font-weight:700;font-size:.92rem;margin:2px 0 6px}
+.pc-coins{font-size:1.3rem;font-weight:900;white-space:nowrap}
+.bar{height:12px;border-radius:99px;background:rgba(0,0,0,.4);overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4)}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .4s}
+.bar i.boss{background:linear-gradient(90deg,#f43f5e,#f59e0b)}
+.sec-title{margin:22px 4px 10px;font-size:1.25rem}
+
+/* 3D stage map */
+.map{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;perspective:1200px;padding:8px 4px 24px}
+.stage{
+  --c1:#34d399;--c2:#059669;--d:#065f46;
+  position:relative;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer;
+  border:0;border-radius:24px;padding:18px;color:#fff;
+  background:linear-gradient(145deg,var(--c1),var(--c2));
+  box-shadow:0 10px 0 var(--d),0 26px 34px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.4);
+  transform-style:preserve-3d;transform:rotateX(14deg) rotateY(-7deg);
+  transition:transform .25s,box-shadow .25s;margin-bottom:10px;
+}
+.stage:nth-child(even){transform:rotateX(14deg) rotateY(7deg)}
+.stage:hover{transform:rotateX(2deg) rotateY(0) translateY(-6px)}
+.stage:active{transform:translateY(6px);box-shadow:0 3px 0 var(--d),0 10px 14px rgba(0,0,0,.4)}
+.stage.s1{--c1:#4ade80;--c2:#16a34a;--d:#14532d}
+.stage.s2{--c1:#60a5fa;--c2:#2563eb;--d:#1e3a8a}
+.stage.s3{--c1:#a78bfa;--c2:#6d28d9;--d:#3b0764}
+.stage.s4{--c1:#fb923c;--c2:#dc2626;--d:#7f1d1d}
+.stage.s5{--c1:#fde047;--c2:#f59e0b;--d:#92400e;grid-column:1/-1;color:#3b2200}
+.stage.locked{filter:grayscale(.85) brightness(.7);cursor:not-allowed}
+.s-ico{flex:none;font-size:3rem;transform:translateZ(46px);filter:drop-shadow(0 10px 8px rgba(0,0,0,.4));animation:floaty 3.2s ease-in-out infinite}
+.s-body{display:flex;flex-direction:column;gap:2px;min-width:0;transform:translateZ(20px)}
+.s-num{font-size:.75rem;font-weight:800;letter-spacing:.16em;opacity:.85}
+.s-name{font-size:1.35rem;font-weight:900;letter-spacing:.04em}
+.s-desc{font-size:.9rem;opacity:.92;font-weight:600}
+.s-stars{font-size:1rem;margin-top:3px}
+.s-go{margin-left:auto;font-size:1.6rem;font-weight:900;transform:translateZ(30px)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;margin-top:6px}
+
+/* ---------- Game ---------- */
+.hud{padding:14px 16px;margin-bottom:12px}
+.hud-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hud-row.stats{margin-top:10px}
+.stage-chip{font-weight:900;letter-spacing:.06em;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25)}
+.hearts{display:flex;gap:4px;font-size:1.7rem}
+.heart{display:inline-block;transition:transform .2s}
+.heart.lost{animation:heartLost .7s}
+.heart.empty{opacity:.6}
+.stat{display:flex;flex-direction:column;align-items:center;min-width:70px}
+.stat label{font-size:.66rem;letter-spacing:.14em;color:var(--mut);font-weight:800}
+.stat b{font-size:1.25rem;font-weight:900}
+.combo{min-width:120px;text-align:center;font-weight:900;font-size:1.05rem;min-height:1.5em}
+.combo.on{padding:4px 12px;border-radius:99px;background:linear-gradient(90deg,#fb923c,#ef4444);box-shadow:0 0 18px rgba(251,146,60,.7);animation:pop .4s}
+.combo.on.lv4,.combo.on.lv5,.combo.on.lv6{background:linear-gradient(90deg,#f43f5e,#a855f7);box-shadow:0 0 26px rgba(244,63,94,.85)}
+.prog{margin-top:12px}
+.prog-lbl{display:flex;justify-content:space-between;font-size:.82rem;font-weight:800;color:var(--mut);margin-bottom:5px}
+.tline{display:flex;align-items:center;gap:10px;margin-top:10px;font-weight:800;font-size:.85rem}
+.tline .tbar{flex:1;height:14px}
+#tLabel{min-width:92px;color:var(--yellow)}
+#tBar{background:linear-gradient(90deg,var(--yellow),var(--green));transition:none}
+#tBar.mid{background:linear-gradient(90deg,#fb923c,#fbbf24)}
+#tBar.low{background:linear-gradient(90deg,#ef4444,#fb7185)}
+
+.qstage{position:relative;perspective:1100px;margin:6px 0 16px}
+.qcard{transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s ease-out}
+.qface{
+  position:relative;transform-style:preserve-3d;text-align:center;padding:22px 16px 26px;min-height:240px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  border-radius:30px;border:2px solid rgba(255,255,255,.3);
+  background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.06));
+  box-shadow:0 14px 0 rgba(20,20,70,.65),0 34px 50px rgba(0,0,0,.45),inset 0 2px 0 rgba(255,255,255,.35);
+}
+.qface.enter{animation:cardIn .55s cubic-bezier(.2,.9,.3,1.2) both}
+.qface.good{animation:pop .5s}
+.qface.bad{animation:shake .45s}
+.q-cat{transform:translateZ(30px);font-weight:800;font-size:.8rem;letter-spacing:.1em;padding:4px 12px;border-radius:99px;background:rgba(0,0,0,.3);color:var(--mut)}
+.q-visual{transform:translateZ(60px)}
+.q-visual.emoji{font-size:clamp(84px,24vw,132px);line-height:1.1;filter:drop-shadow(0 14px 10px rgba(0,0,0,.45));animation:floaty3 3s ease-in-out infinite}
+.q-visual.word{font-size:clamp(2.1rem,10vw,3.6rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 4px 0 #3b2a8f,0 8px 0 #2b1d6e,0 16px 20px rgba(0,0,0,.5)}
+.q-visual.sentence{font-size:clamp(1.3rem,5.4vw,2rem);font-weight:800;line-height:1.5;padding:0 6px}
+.blank{display:inline-block;min-width:3.2em;padding:0 8px;border-bottom:4px dashed var(--yellow);color:var(--yellow);border-radius:6px}
+.blank.ok{border-bottom-style:solid;border-color:var(--green);color:#bbf7d0;background:rgba(52,211,153,.18)}
+.q-prompt{transform:translateZ(36px);font-weight:700;color:var(--mut)}
+.speak{transform:translateZ(40px);width:52px;height:52px;border-radius:50%;border:0;cursor:pointer;font-size:1.4rem;background:linear-gradient(180deg,#38bdf8,#2563eb);box-shadow:0 5px 0 #1e3a8a,0 10px 14px rgba(0,0,0,.35)}
+.speak:active{transform:translateZ(40px) translateY(4px);box-shadow:0 1px 0 #1e3a8a}
+.speak.sm{transform:none;width:36px;height:36px;font-size:1rem;vertical-align:middle;margin-left:6px;box-shadow:0 3px 0 #1e3a8a}
+.speak.sm:active{transform:translateY(2px)}
+.q-hint{display:none;transform:translateZ(30px);margin-top:4px;padding:8px 14px;border-radius:14px;background:rgba(251,191,36,.18);border:1px dashed var(--yellow);color:#fde68a;font-weight:700;max-width:100%}
+.q-hint.on{display:block;animation:pop .4s}
+
+.options{display:grid;grid-template-columns:1fr;gap:14px;perspective:900px;margin-bottom:10px}
+@media(min-width:560px){.options{grid-template-columns:1fr 1fr}}
+.opt{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:68px;padding:12px 16px;border-radius:20px;cursor:pointer;text-align:left;
+  border:2px solid rgba(255,255,255,.25);color:#fff;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.35rem);
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.07));
+  box-shadow:0 7px 0 rgba(10,10,50,.7),0 14px 18px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.3);
+  transition:transform .12s,box-shadow .12s,background .2s,opacity .2s,border-color .2s;
+}
+.opt .key{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(0,0,0,.3);font-weight:900;font-size:1rem}
+.opt.en .otxt{text-transform:uppercase;letter-spacing:.06em}
+.opt:hover:not(:disabled){transform:translateY(-3px) rotateX(7deg);border-color:var(--cyan)}
+.opt:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 rgba(10,10,50,.7)}
+.opt:disabled{cursor:default}
+.opt.correct{background:linear-gradient(180deg,#34d399,#059669);border-color:#a7f3d0;animation:pop .5s;opacity:1}
+.opt.wrong{background:linear-gradient(180deg,#fb7185,#e11d48);border-color:#fecdd3;animation:shake .45s;opacity:1}
+.opt.dim{opacity:.45}
+.opt.gone{opacity:.14;pointer-events:none;transform:scale(.95)}
+
+.hints{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 12px}
+.hint{min-height:56px;padding:8px 6px;font-size:.88rem;flex-direction:column;gap:2px;line-height:1.2}
+.hint small{font-weight:700;opacity:.95}
+.hint.used{filter:grayscale(1) brightness(.6)}
+
+.feedback{padding:16px;margin-top:8px;animation:cardIn .45s both}
+.feedback.ok{border-color:rgba(52,211,153,.8)}
+.feedback.bad{border-color:rgba(251,113,133,.85)}
+.fb-head{font-size:1.3rem;font-weight:900;margin-bottom:8px}
+.fb-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip-s{padding:5px 11px;border-radius:99px;font-weight:800;font-size:.85rem;background:rgba(255,255,255,.14)}
+.chip-s.xp{background:rgba(34,211,238,.25)}
+.chip-s.coin{background:rgba(251,191,36,.28)}
+.chip-s.spd{background:rgba(250,204,21,.28)}
+.chip-s.cmb{background:rgba(251,146,60,.35)}
+.chip-s.lose{background:rgba(251,113,133,.3)}
+.fb-word{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.fb-emoji{font-size:2.6rem}
+.fb-en{font-size:1.4rem;font-weight:900;letter-spacing:.06em}
+.fb-th{color:var(--mut);font-weight:700}
+.fb-ex{padding:10px 12px;border-radius:14px;background:rgba(0,0,0,.25);margin-bottom:14px;line-height:1.5}
+.fb-ex b{color:var(--yellow)}
+.fb-ex span{color:var(--mut);font-size:.92rem}
+
+.float{position:absolute;left:50%;top:32%;z-index:5;transform:translateX(-50%);font-size:2rem;font-weight:900;pointer-events:none;text-shadow:0 3px 0 rgba(0,0,0,.4);animation:floatUp 1.1s ease-out forwards;white-space:nowrap}
+.float.good{color:#bbf7d0}
+.float.bad{color:#fecdd3}
+.flycoin{position:fixed;z-index:90;font-size:1.6rem;pointer-events:none}
+
+/* ---------- Result ---------- */
+.result-card{max-width:620px;margin:10px auto;padding:26px 18px;text-align:center;animation:cardIn .6s both}
+.r-banner{font-size:clamp(1.8rem,8vw,2.6rem);font-weight:900;text-shadow:0 4px 0 #3b2a8f,0 10px 20px rgba(0,0,0,.5)}
+.r-sub{color:var(--mut);margin:8px 0 18px;font-weight:700;line-height:1.5}
+.r-stars{font-size:2.2rem;margin-bottom:14px;letter-spacing:.2em}
+.r-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+@media(min-width:520px){.r-grid{grid-template-columns:repeat(3,1fr)}}
+.r-item{padding:14px 8px;border-radius:18px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.15);transform:perspective(500px) rotateX(8deg);box-shadow:0 8px 0 rgba(0,0,0,.25)}
+.r-item label{display:block;font-size:.7rem;letter-spacing:.16em;color:var(--mut);font-weight:800;margin-bottom:4px}
+.r-item b{font-size:1.5rem;font-weight:900}
+.r-item.rank{grid-column:1/-1}
+.r-item.rank b{font-size:1.7rem;color:var(--yellow)}
+.r-actions{display:grid;gap:10px}
+.r-new{margin:-6px 0 14px;color:#bbf7d0;font-weight:700}
+
+/* ---------- Vocab book ---------- */
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.page-head h2{margin:0;font-size:1.5rem}
+.filters{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:thin}
+.fchip{flex:none;padding:8px 14px;border-radius:99px;border:1.5px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1);cursor:pointer;font-weight:800;font-size:.9rem;white-space:nowrap}
+.fchip.on{background:linear-gradient(180deg,var(--cyan),#0891b2);color:#04293a;border-color:#a5f3fc}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px;perspective:1000px}
+.vcard{padding:16px;text-align:center;transform:rotateX(6deg);transition:transform .25s;border-radius:22px}
+.vcard:hover{transform:rotateX(0) translateY(-5px)}
+.vcard .v-emoji{font-size:3.2rem;filter:drop-shadow(0 8px 6px rgba(0,0,0,.4));animation:floaty 3.4s ease-in-out infinite}
+.vcard .v-en{font-size:1.4rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase;margin-top:4px}
+.vcard .v-th{font-weight:800;color:var(--yellow);margin:2px 0 8px}
+.vcard .v-ex{font-size:.92rem;color:var(--mut);line-height:1.45;margin-bottom:10px}
+.vcard .v-meta{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:.78rem;font-weight:800}
+.vcard .v-meta span{padding:3px 10px;border-radius:99px;background:rgba(255,255,255,.14)}
+.vcard.lockedw{opacity:.55;filter:grayscale(.6)}
+.vcard.lockedw .v-emoji{animation:none}
+.empty{padding:30px;text-align:center;color:var(--mut);font-weight:700}
+
+/* ---------- Leaderboard ---------- */
+.lb{display:grid;gap:10px;perspective:900px}
+.lb-row{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.18);box-shadow:0 6px 0 rgba(0,0,0,.25);transform:rotateX(5deg)}
+.lb-row.me{border-color:var(--yellow);box-shadow:0 6px 0 rgba(0,0,0,.25),0 0 22px rgba(251,191,36,.35)}
+.lb-pos{font-size:1.5rem;font-weight:900;text-align:center}
+.lb-name{font-weight:900;font-size:1.05rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-meta{font-size:.78rem;color:var(--mut);font-weight:700;margin-top:2px}
+.lb-score{text-align:right;font-weight:900;font-size:1.3rem}
+.lb-score small{display:block;font-size:.72rem;color:var(--mut)}
+
+/* ---------- Profile ---------- */
+.prof-top{display:flex;align-items:center;gap:16px;padding:18px;margin-bottom:14px}
+.prof-top .avatar{width:84px;height:84px;font-size:2.6rem;border-radius:28px}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+@media(min-width:640px){.pgrid{grid-template-columns:repeat(4,1fr)}}
+.pstat{padding:14px 8px;text-align:center;border-radius:18px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.15)}
+.pstat label{display:block;font-size:.68rem;letter-spacing:.14em;color:var(--mut);font-weight:800;margin-bottom:4px}
+.pstat b{font-size:1.25rem;font-weight:900}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:12px;margin-bottom:18px}
+.ach{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:18px;background:linear-gradient(145deg,rgba(251,191,36,.28),rgba(251,191,36,.08));border:1.5px solid rgba(251,191,36,.6)}
+.ach .a-ico{font-size:2.1rem;filter:drop-shadow(0 4px 4px rgba(0,0,0,.4))}
+.ach b{display:block}
+.ach small{color:var(--mut);font-weight:600}
+.ach.locked{background:rgba(255,255,255,.06);border:1.5px dashed rgba(255,255,255,.25);filter:grayscale(1);opacity:.65}
+
+/* ---------- Modal + toast ---------- */
+#modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,6,30,.7);backdrop-filter:blur(4px)}
+#modal.open{display:flex}
+.m-box{width:100%;max-width:420px;padding:22px;background:linear-gradient(160deg,#2b2f7e,#171a4f);animation:cardIn .4s both}
+.m-box h3{margin:0 0 10px;font-size:1.3rem}
+.m-body{line-height:1.6;color:#e5e7ff;margin-bottom:16px}
+.m-body input{width:100%;padding:13px 14px;font-size:1.1rem;font-weight:700;border-radius:14px;border:2px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);color:#fff;outline:none}
+.m-btns{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+#toasts{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:110;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,420px);pointer-events:none}
+.toast{padding:11px 18px;border-radius:16px;font-weight:800;text-align:center;background:rgba(15,18,60,.95);border:1.5px solid rgba(255,255,255,.3);box-shadow:0 10px 24px rgba(0,0,0,.5);animation:toastIn .35s both}
+.toast.ach{border-color:var(--yellow);background:linear-gradient(90deg,#78350f,#92400e)}
+.toast.out{animation:toastOut .3s both}
+
+/* ---------- Animations ---------- */
+@keyframes cardIn{from{opacity:0;transform:perspective(900px) rotateY(-55deg) translateZ(-140px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.07) rotateX(6deg)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(5px)}}
+@keyframes floaty{0%,100%{transform:translateZ(46px) translateY(0)}50%{transform:translateZ(46px) translateY(-8px)}}
+@keyframes floaty3{0%,100%{transform:translateZ(60px) translateY(0) rotateY(-6deg)}50%{transform:translateZ(60px) translateY(-10px) rotateY(6deg)}}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,20px) scale(.7)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-80px) scale(1)}}
+@keyframes heartLost{0%{transform:scale(1)}30%{transform:scale(1.5) rotate(-15deg)}100%{transform:scale(1)}}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+@keyframes toastOut{to{opacity:0;transform:translateY(10px)}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media(max-width:420px){.brand-txt{display:none}.mini-bar{width:48px}.chip{padding:6px 10px}}
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<canvas id="fx"></canvas>
+
+<!-- =====================================================================
+     1. HTML
+     ===================================================================== -->
+<div id="app">
+
+  <header id="topbar" class="hidden">
+    <button class="brand" id="brandBtn" aria-label="กลับหน้าหลัก">
+      <span class="brand-ico">🎯</span>
+      <span class="brand-txt">ENGLISH<br>WORD HUNTER</span>
+    </button>
+    <div class="tb-stats">
+      <div class="chip lvchip" title="เลเวลผู้เล่น">
+        <span class="lvl">LV <b id="tbLv">1</b></span>
+        <div class="mini-bar"><i id="tbXp"></i></div>
+      </div>
+      <div class="chip" id="tbCoinChip">🪙 <b id="tbCoins">0</b></div>
+      <button class="icon-btn" id="soundBtn" title="เปิด/ปิดเสียง" aria-label="เปิดปิดเสียง">🔊</button>
+      <button class="icon-btn" id="homeBtn" title="หน้าหลัก" aria-label="หน้าหลัก">🏠</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= WELCOME ================= -->
+    <section id="screen-welcome" class="screen active">
+      <div class="welcome">
+        <div class="cube-wrap"><div class="cube">
+          <div class="f f1">🔤</div><div class="f f2">📚</div><div class="f f3">🎓</div>
+          <div class="f f4">🧠</div><div class="f f5">🏆</div><div class="f f6">🌍</div>
+        </div></div>
+        <h1 class="title">ENGLISH<br><span>WORD HUNTER</span></h1>
+        <p class="sub">เกมล่าคำศัพท์ภาษาอังกฤษ</p>
+        <p class="tag">“ล่าคำศัพท์ พิชิตทุกด่าน!”</p>
+        <div class="glass namebox">
+          <label for="nameInput">ชื่อผู้เล่น</label>
+          <input id="nameInput" maxlength="16" placeholder="เช่น Somchai" autocomplete="off">
+          <button class="btn btn-green big" id="startBtn">▶ เริ่มเกม</button>
+        </div>
+        <p class="hintline">ระดับ ม.ปลาย • 60 คำศัพท์ • 5 ด่าน • เล่นได้ทั้งมือถือและคอม</p>
+      </div>
+    </section>
+
+    <!-- ================= HOME ================= -->
+    <section id="screen-home" class="screen">
+      <div class="wrap">
+        <div class="player-card glass">
+          <div class="avatar" id="hAvatar">S</div>
+          <div class="pc-info">
+            <div class="pc-name" id="hName"></div>
+            <div class="pc-sub">LV <b id="hLv"></b> • XP <b id="hXp"></b></div>
+            <div class="bar"><i id="hXpBar"></i></div>
+            <div class="pc-sub small" id="hXpNext"></div>
+          </div>
+          <div class="pc-coins">🪙 <b id="hCoins"></b></div>
+        </div>
+        <h2 class="sec-title">🗺️ แผนที่การผจญภัย</h2>
+        <div class="map" id="map"></div>
+        <div class="menu-grid">
+          <button class="btn btn-blue" data-go="vocab">📖 VOCABULARY BOOK</button>
+          <button class="btn btn-purple" data-go="board">🏆 LEADERBOARD</button>
+          <button class="btn btn-pink" data-go="profile">👤 PROFILE</button>
+          <button class="btn btn-gold" id="reviewBtn">🔁 ทบทวนคำที่ผิด <span id="reviewCount"></span></button>
+        </div>
+        <div class="center"><button class="btn btn-danger small" id="resetBtn">♻️ RESET GAME</button></div>
+      </div>
+    </section>
+
+    <!-- ================= GAME ================= -->
+    <section id="screen-game" class="screen">
+      <div class="wrap">
+        <div class="hud glass">
+          <div class="hud-row">
+            <div class="stage-chip" id="gStage"></div>
+            <div class="hearts" id="gHearts"></div>
+          </div>
+          <div class="hud-row stats">
+            <div class="stat"><label>SCORE</label><b id="gScore">0</b></div>
+            <div class="stat"><label>COINS</label><b id="gCoins">0</b></div>
+            <div class="stat"><label>TIME</label><b id="gClock">00:00</b></div>
+            <div class="combo" id="gCombo"></div>
+          </div>
+          <div class="prog">
+            <div class="prog-lbl"><span id="qNum"></span><span id="progRight"></span></div>
+            <div class="bar"><i id="progBar"></i></div>
+          </div>
+          <div class="tline"><span id="tLabel"></span><div class="bar tbar"><i id="tBar"></i></div></div>
+        </div>
+
+        <div class="qstage" id="qStage">
+          <div class="qcard" id="qCard">
+            <div class="qface" id="qFace">
+              <div class="q-cat" id="qCat"></div>
+              <div class="q-visual" id="qVisual"></div>
+              <div class="q-prompt" id="qPrompt"></div>
+              <button class="speak hidden" id="qSpeak" aria-label="ฟังเสียง">🔊</button>
+              <div class="q-hint" id="qHint"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="options" id="options"></div>
+
+        <div class="hints" id="hints">
+          <button class="btn btn-blue hint" id="hint-fifty" data-hint="fifty">✂️ 50/50<small>🪙 20</small></button>
+          <button class="btn btn-purple hint" id="hint-thai" data-hint="thai">💡 Thai Hint<small>🪙 20</small></button>
+          <button class="btn btn-pink hint" id="hint-first" data-hint="first">🔤 First Letter<small>🪙 20</small></button>
+        </div>
+
+        <div class="feedback glass hidden" id="feedback"></div>
+      </div>
+    </section>
+
+    <!-- ================= RESULT ================= -->
+    <section id="screen-result" class="screen">
+      <div class="wrap">
+        <div class="result-card glass">
+          <div class="r-banner" id="rBanner"></div>
+          <div class="r-sub" id="rSub"></div>
+          <div class="r-stars" id="rStars"></div>
+          <div class="r-grid">
+            <div class="r-item"><label>SCORE</label><b id="rScore">0</b></div>
+            <div class="r-item"><label>XP</label><b id="rXp">+0</b></div>
+            <div class="r-item"><label>COINS</label><b id="rCoins">+0</b></div>
+            <div class="r-item"><label>ACCURACY</label><b id="rAcc">0%</b></div>
+            <div class="r-item"><label>BEST COMBO</label><b id="rCombo">x0</b></div>
+            <div class="r-item"><label>TIME</label><b id="rTime">00:00</b></div>
+            <div class="r-item rank"><label>RANK</label><b id="rRank"></b></div>
+          </div>
+          <div class="r-new" id="rNew"></div>
+          <div class="r-actions">
+            <button class="btn btn-green big" id="rAgain">PLAY AGAIN</button>
+            <button class="btn btn-gold big" id="rNext">NEXT LEVEL ▶</button>
+            <button class="btn btn-blue" data-go="vocab">📖 VOCABULARY BOOK</button>
+            <button class="btn btn-purple" data-go="board">🏆 LEADERBOARD</button>
+            <button class="btn btn-ghost" data-go="home">🏠 กลับหน้าหลัก</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VOCAB BOOK ================= -->
+    <section id="screen-vocab" class="screen">
+      <div class="wrap">
+        <div class="page-head">
+          <h2>📖 VOCABULARY BOOK</h2>
+          <button class="btn btn-ghost small" data-go="home">← กลับ</button>
+        </div>
+        <div class="pc-sub" id="vProgress"></div>
+        <div class="filters" id="vFilters"></div>
+        <div class="vgrid" id="vGrid"></div>
+      </div>
+    </section>
+
+    <!-- ================= LEADERBOARD ================= -->
+    <section id="screen-board" class="screen">
+      <div class="wrap">
+        <div class="page-head">
+          <h2>🏆 LEADERBOARD</h2>
+          <button class="btn btn-ghost small" data-go="home">← กลับ</button>
+        </div>
+        <div class="pc-sub">Top 10 ของเครื่องนี้ • เรียงตามคะแนน</div>
+        <div class="lb" id="lbList"></div>
+      </div>
+    </section>
+
+    <!-- ================= PROFILE ================= -->
+    <section id="screen-profile" class="screen">
+      <div class="wrap">
+        <div class="page-head">
+          <h2>👤 PLAYER PROFILE</h2>
+          <button class="btn btn-ghost small" data-go="home">← กลับ</button>
+        </div>
+        <div class="prof-top glass">
+          <div class="avatar" id="pAvatar">S</div>
+          <div class="pc-info">
+            <div class="pc-name" id="pName"></div>
+            <div class="pc-sub">LV <b id="pLv"></b> • XP <b id="pXp"></b></div>
+            <div class="bar"><i id="pXpBar"></i></div>
+          </div>
+        </div>
+        <div class="pgrid" id="pStats"></div>
+        <h2 class="sec-title">🏅 Achievements</h2>
+        <div class="agrid" id="pAch"></div>
+        <div class="menu-grid">
+          <button class="btn btn-blue" id="renameBtn">✏️ เปลี่ยนชื่อผู้เล่น</button>
+          <button class="btn btn-danger" id="resetBtn2">♻️ RESET GAME</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="modal"><div class="m-box glass"><h3 id="mTitle"></h3><div class="m-body" id="mBody"></div><div class="m-btns" id="mBtns"></div></div></div>
+<div id="toasts"></div>
+<noscript><p style="position:relative;z-index:5;padding:20px">กรุณาเปิดใช้งาน JavaScript เพื่อเล่นเกม</p></noscript>
+
+<script>
+'use strict';
+/* =====================================================================
+   3. GAME DATA — คำศัพท์ 60 คำ / 10 หมวด (ระดับ ม.ปลาย)
+   word, thai, example, exampleTh, hintTh, category, emoji, pos
+   ===================================================================== */
+const CAT = {
+  Science:    {th:'วิทยาศาสตร์', icon:'🔬'},
+  Technology: {th:'เทคโนโลยี',   icon:'💻'},
+  Environment:{th:'สิ่งแวดล้อม', icon:'🌍'},
+  Health:     {th:'สุขภาพ',      icon:'🏥'},
+  School:     {th:'การเรียน',    icon:'🎓'},
+  Travel:     {th:'การเดินทาง',  icon:'✈️'},
+  Career:     {th:'อาชีพ',       icon:'💼'},
+  Society:    {th:'สังคม',       icon:'🏛️'},
+  Emotions:   {th:'อารมณ์',      icon:'😊'},
+  Food:       {th:'อาหาร',       icon:'🍜'}
+};
+const POS_TH = {n:'noun • คำนาม', v:'verb • คำกริยา', adj:'adjective • คำคุณศัพท์'};
+
+const WORDS = [
+  // ---- Science ----
+  {word:'microscope', thai:'กล้องจุลทรรศน์', example:'We use a microscope to see tiny cells.', exampleTh:'เราใช้กล้องจุลทรรศน์เพื่อดูเซลล์ขนาดเล็ก', hintTh:'เครื่องมือในห้องแล็บ ใช้ส่องดูสิ่งที่เล็กมากจนตาเปล่าเห็นไม่ได้', category:'Science', emoji:'🔬', pos:'n'},
+  {word:'telescope', thai:'กล้องโทรทรรศน์', example:'He looks at the stars through a telescope.', exampleTh:'เขามองดูดาวผ่านกล้องโทรทรรศน์', hintTh:'ใช้มองดวงดาวและวัตถุที่อยู่ไกลมากบนท้องฟ้า', category:'Science', emoji:'🔭', pos:'n'},
+  {word:'experiment', thai:'การทดลอง', example:'Our class did an experiment with water and salt.', exampleTh:'ห้องเรียนของเราทำการทดลองกับน้ำและเกลือ', hintTh:'การทดสอบทางวิทยาศาสตร์เพื่อพิสูจน์สมมติฐาน', category:'Science', emoji:'🧪', pos:'n'},
+  {word:'planet', thai:'ดาวเคราะห์', example:'Saturn is the planet with beautiful rings.', exampleTh:'ดาวเสาร์เป็นดาวเคราะห์ที่มีวงแหวนสวยงาม', hintTh:'วัตถุขนาดใหญ่ที่โคจรรอบดวงอาทิตย์ เช่น โลก ดาวอังคาร', category:'Science', emoji:'🪐', pos:'n'},
+  {word:'magnet', thai:'แม่เหล็ก', example:'A magnet can pick up small iron nails.', exampleTh:'แม่เหล็กสามารถดูดตะปูเหล็กชิ้นเล็ก ๆ ได้', hintTh:'วัตถุที่ดึงดูดเหล็กได้', category:'Science', emoji:'🧲', pos:'n'},
+  {word:'battery', thai:'แบตเตอรี่', example:'My phone battery is almost empty.', exampleTh:'แบตเตอรี่โทรศัพท์ของฉันเกือบหมดแล้ว', hintTh:'แหล่งพลังงานไฟฟ้าที่ใส่ในโทรศัพท์และของเล่น', category:'Science', emoji:'🔋', pos:'n'},
+  // ---- Technology ----
+  {word:'keyboard', thai:'แป้นพิมพ์', example:'I type my essay on the keyboard.', exampleTh:'ฉันพิมพ์เรียงความบนแป้นพิมพ์', hintTh:'อุปกรณ์ที่มีปุ่มตัวอักษรไว้พิมพ์ข้อความ', category:'Technology', emoji:'⌨️', pos:'n'},
+  {word:'password', thai:'รหัสผ่าน', example:'Never share your password with anyone.', exampleTh:'อย่าบอกรหัสผ่านของคุณกับใครเด็ดขาด', hintTh:'ชุดตัวอักษรลับที่ใช้เข้าบัญชี ห้ามบอกใคร', category:'Technology', emoji:'🔑', pos:'n'},
+  {word:'robot', thai:'หุ่นยนต์', example:'The robot can clean the floor by itself.', exampleTh:'หุ่นยนต์ตัวนี้ถูพื้นได้ด้วยตัวเอง', hintTh:'เครื่องจักรที่ทำงานแทนมนุษย์ได้เอง', category:'Technology', emoji:'🤖', pos:'n'},
+  {word:'satellite', thai:'ดาวเทียม', example:'A satellite sends weather photos to Earth.', exampleTh:'ดาวเทียมส่งภาพถ่ายสภาพอากาศมายังโลก', hintTh:'วัตถุที่โคจรรอบโลก ใช้ส่งสัญญาณและถ่ายภาพ', category:'Technology', emoji:'🛰️', pos:'n'},
+  {word:'website', thai:'เว็บไซต์', example:'Our school has a new website.', exampleTh:'โรงเรียนของเรามีเว็บไซต์ใหม่', hintTh:'หน้าเพจที่เปิดดูได้ในอินเทอร์เน็ต', category:'Technology', emoji:'🌐', pos:'n'},
+  {word:'headphones', thai:'หูฟัง', example:'She listens to music with her headphones.', exampleTh:'เธอฟังเพลงผ่านหูฟังของเธอ', hintTh:'อุปกรณ์สวมหูไว้ฟังเพลงโดยไม่รบกวนคนอื่น', category:'Technology', emoji:'🎧', pos:'n'},
+  // ---- Environment ----
+  {word:'pollution', thai:'มลพิษ', example:'Factory smoke causes air pollution in big cities.', exampleTh:'ควันจากโรงงานทำให้เกิดมลพิษทางอากาศในเมืองใหญ่', hintTh:'สิ่งสกปรกที่ทำให้อากาศ น้ำ หรือดินเสีย', category:'Environment', emoji:'🏭', pos:'n'},
+  {word:'recycle', thai:'รีไซเคิล', example:'We should recycle plastic bottles.', exampleTh:'เราควรรีไซเคิลขวดพลาสติก', hintTh:'นำของที่ใช้แล้วมาแปรรูปเพื่อใช้ใหม่', category:'Environment', emoji:'♻️', pos:'v'},
+  {word:'climate', thai:'สภาพภูมิอากาศ', example:'The climate in Thailand is hot and humid.', exampleTh:'สภาพภูมิอากาศของประเทศไทยร้อนและชื้น', hintTh:'ลักษณะอากาศโดยรวมของพื้นที่ในระยะยาว', category:'Environment', emoji:'🌡️', pos:'n'},
+  {word:'forest', thai:'ป่าไม้', example:'Many wild animals live in the forest.', exampleTh:'สัตว์ป่าจำนวนมากอาศัยอยู่ในป่า', hintTh:'พื้นที่กว้างที่เต็มไปด้วยต้นไม้จำนวนมาก', category:'Environment', emoji:'🌲', pos:'n'},
+  {word:'ocean', thai:'มหาสมุทร', example:'The Pacific is the largest ocean in the world.', exampleTh:'แปซิฟิกคือมหาสมุทรที่ใหญ่ที่สุดในโลก', hintTh:'แหล่งน้ำเค็มผืนใหญ่ที่สุดบนโลก', category:'Environment', emoji:'🌊', pos:'n'},
+  {word:'volcano', thai:'ภูเขาไฟ', example:'The volcano erupted and sent ash into the sky.', exampleTh:'ภูเขาไฟระเบิดและพ่นเถ้าถ่านขึ้นสู่ท้องฟ้า', hintTh:'ภูเขาที่พ่นลาวาและเถ้าถ่านออกมาได้', category:'Environment', emoji:'🌋', pos:'n'},
+  // ---- Health ----
+  {word:'medicine', thai:'ยา', example:'Take the medicine after your meal.', exampleTh:'กินยาหลังอาหาร', hintTh:'สิ่งที่กินหรือใช้เพื่อรักษาอาการป่วย', category:'Health', emoji:'💊', pos:'n'},
+  {word:'vaccine', thai:'วัคซีน', example:'A vaccine protects people from serious diseases.', exampleTh:'วัคซีนช่วยปกป้องผู้คนจากโรคร้ายแรง', hintTh:'สิ่งที่ฉีดเข้าร่างกายเพื่อสร้างภูมิคุ้มกันโรค', category:'Health', emoji:'💉', pos:'n'},
+  {word:'hospital', thai:'โรงพยาบาล', example:'The doctor works at a big hospital.', exampleTh:'คุณหมอทำงานที่โรงพยาบาลขนาดใหญ่', hintTh:'สถานที่ที่แพทย์และพยาบาลรักษาคนไข้', category:'Health', emoji:'🏥', pos:'n'},
+  {word:'exercise', thai:'การออกกำลังกาย', example:'Daily exercise keeps your heart strong.', exampleTh:'การออกกำลังกายทุกวันทำให้หัวใจแข็งแรง', hintTh:'กิจกรรมที่ทำให้ร่างกายแข็งแรง เช่น วิ่ง ว่ายน้ำ', category:'Health', emoji:'🏃', pos:'n'},
+  {word:'nutrition', thai:'โภชนาการ', example:'Good nutrition is important for growing teenagers.', exampleTh:'โภชนาการที่ดีสำคัญต่อวัยรุ่นที่กำลังเติบโต', hintTh:'สารอาหารที่ร่างกายต้องการจากสิ่งที่เรากิน', category:'Health', emoji:'🥗', pos:'n'},
+  {word:'dentist', thai:'ทันตแพทย์', example:'I visit the dentist twice a year to check my teeth.', exampleTh:'ฉันไปหาทันตแพทย์ปีละสองครั้งเพื่อตรวจฟัน', hintTh:'แพทย์ที่ดูแลฟันและช่องปาก', category:'Health', emoji:'🦷', pos:'n'},
+  // ---- School ----
+  {word:'library', thai:'ห้องสมุด', example:'I borrow books from the school library.', exampleTh:'ฉันยืมหนังสือจากห้องสมุดของโรงเรียน', hintTh:'สถานที่ที่มีหนังสือไว้ให้ยืมและอ่าน', category:'School', emoji:'📚', pos:'n'},
+  {word:'homework', thai:'การบ้าน', example:'I must finish my homework before dinner.', exampleTh:'ฉันต้องทำการบ้านให้เสร็จก่อนมื้อค่ำ', hintTh:'งานที่ครูให้นักเรียนไปทำที่บ้าน', category:'School', emoji:'📝', pos:'n'},
+  {word:'calculator', thai:'เครื่องคิดเลข', example:'Use a calculator to solve this math problem.', exampleTh:'ใช้เครื่องคิดเลขเพื่อแก้โจทย์คณิตศาสตร์ข้อนี้', hintTh:'เครื่องมือที่ช่วยบวก ลบ คูณ หาร ตัวเลข', category:'School', emoji:'🧮', pos:'n'},
+  {word:'scholarship', thai:'ทุนการศึกษา', example:'She won a scholarship to study abroad.', exampleTh:'เธอได้รับทุนการศึกษาไปเรียนต่อต่างประเทศ', hintTh:'เงินสนับสนุนให้นักเรียนเรียนต่อโดยไม่ต้องจ่ายเอง', category:'School', emoji:'🎓', pos:'n'},
+  {word:'schedule', thai:'ตารางเวลา', example:'Check your exam schedule on the notice board.', exampleTh:'ตรวจดูตารางสอบของคุณที่บอร์ดประกาศ', hintTh:'รายการที่บอกว่าต้องทำอะไรเมื่อไร', category:'School', emoji:'📅', pos:'n'},
+  {word:'dictionary', thai:'พจนานุกรม', example:'Look up the new word in a dictionary.', exampleTh:'ลองเปิดหาคำศัพท์ใหม่ในพจนานุกรม', hintTh:'หนังสือที่อธิบายความหมายของคำศัพท์', category:'School', emoji:'📖', pos:'n'},
+  // ---- Travel ----
+  {word:'passport', thai:'หนังสือเดินทาง', example:'You need a passport to travel abroad.', exampleTh:'คุณต้องมีหนังสือเดินทางเพื่อเดินทางไปต่างประเทศ', hintTh:'เอกสารสำคัญที่ใช้เดินทางข้ามประเทศ', category:'Travel', emoji:'🛂', pos:'n'},
+  {word:'luggage', thai:'สัมภาระ', example:'My luggage was too heavy for the plane.', exampleTh:'สัมภาระของฉันหนักเกินไปสำหรับเครื่องบิน', hintTh:'กระเป๋าและของที่เรานำติดตัวไปเวลาเดินทาง', category:'Travel', emoji:'🧳', pos:'n'},
+  {word:'airport', thai:'สนามบิน', example:'We arrived at the airport two hours early.', exampleTh:'เรามาถึงสนามบินก่อนเวลาสองชั่วโมง', hintTh:'สถานที่ที่เครื่องบินขึ้นและลงจอด', category:'Travel', emoji:'🛫', pos:'n'},
+  {word:'ticket', thai:'ตั๋ว', example:'I bought a ticket to watch the concert.', exampleTh:'ฉันซื้อตั๋วเพื่อเข้าชมคอนเสิร์ต', hintTh:'บัตรที่ใช้เข้าชมงานหรือขึ้นพาหนะ', category:'Travel', emoji:'🎫', pos:'n'},
+  {word:'island', thai:'เกาะ', example:'We took a boat to a small island.', exampleTh:'เรานั่งเรือไปยังเกาะเล็ก ๆ', hintTh:'แผ่นดินที่มีน้ำล้อมรอบทุกด้าน', category:'Travel', emoji:'🏝️', pos:'n'},
+  {word:'souvenir', thai:'ของที่ระลึก', example:'I bought a small keychain as a souvenir from my trip.', exampleTh:'ฉันซื้อพวงกุญแจเล็ก ๆ เป็นของที่ระลึกจากการเดินทาง', hintTh:'ของที่ซื้อกลับมาเพื่อจดจำการเดินทาง', category:'Travel', emoji:'🎁', pos:'n'},
+  // ---- Career ----
+  {word:'engineer', thai:'วิศวกร', example:'The engineer designed a strong bridge.', exampleTh:'วิศวกรออกแบบสะพานที่แข็งแรง', hintTh:'ผู้ออกแบบและสร้างสะพาน เครื่องจักร หรือระบบต่าง ๆ', category:'Career', emoji:'👷', pos:'n'},
+  {word:'salary', thai:'เงินเดือน', example:'He receives his salary at the end of each month.', exampleTh:'เขาได้รับเงินเดือนทุกสิ้นเดือน', hintTh:'ค่าจ้างที่ลูกจ้างได้รับเป็นประจำ', category:'Career', emoji:'💰', pos:'n'},
+  {word:'interview', thai:'การสัมภาษณ์งาน', example:'She prepared for the job interview all week.', exampleTh:'เธอเตรียมตัวสำหรับการสัมภาษณ์งานตลอดทั้งสัปดาห์', hintTh:'การพูดคุยเพื่อคัดเลือกคนเข้าทำงาน', category:'Career', emoji:'🤝', pos:'n'},
+  {word:'farmer', thai:'เกษตรกร', example:'The farmer grows rice in his field.', exampleTh:'เกษตรกรปลูกข้าวในที่นาของเขา', hintTh:'คนที่ปลูกพืชและเลี้ยงสัตว์เป็นอาชีพ', category:'Career', emoji:'🌾', pos:'n'},
+  {word:'firefighter', thai:'นักดับเพลิง', example:'The firefighter saved a cat from the burning house.', exampleTh:'นักดับเพลิงช่วยแมวออกมาจากบ้านที่กำลังไหม้', hintTh:'ผู้ทำหน้าที่ดับไฟและช่วยชีวิตคน', category:'Career', emoji:'🚒', pos:'n'},
+  {word:'architect', thai:'สถาปนิก', example:'The architect drew plans for a modern library.', exampleTh:'สถาปนิกวาดแบบห้องสมุดสมัยใหม่', hintTh:'ผู้ออกแบบอาคารและบ้าน', category:'Career', emoji:'📐', pos:'n'},
+  // ---- Society ----
+  {word:'government', thai:'รัฐบาล', example:'The government built a new road.', exampleTh:'รัฐบาลสร้างถนนสายใหม่', hintTh:'องค์กรที่บริหารและปกครองประเทศ', category:'Society', emoji:'🏛️', pos:'n'},
+  {word:'election', thai:'การเลือกตั้ง', example:'Citizens vote in the election every four years.', exampleTh:'ประชาชนไปลงคะแนนเสียงในการเลือกตั้งทุกสี่ปี', hintTh:'การที่ประชาชนลงคะแนนเลือกผู้แทน', category:'Society', emoji:'🗳️', pos:'n'},
+  {word:'law', thai:'กฎหมาย', example:'Everyone must obey the law.', exampleTh:'ทุกคนต้องปฏิบัติตามกฎหมาย', hintTh:'ข้อบังคับที่ทุกคนในสังคมต้องปฏิบัติตาม', category:'Society', emoji:'⚖️', pos:'n'},
+  {word:'volunteer', thai:'อาสาสมัคร', example:'She works as a volunteer at the animal shelter.', exampleTh:'เธอทำงานเป็นอาสาสมัครที่ศูนย์พักพิงสัตว์', hintTh:'คนที่ช่วยทำงานดี ๆ โดยไม่ได้รับค่าจ้าง', category:'Society', emoji:'🙋', pos:'n'},
+  {word:'festival', thai:'เทศกาล', example:'Songkran is a famous festival in Thailand.', exampleTh:'สงกรานต์เป็นเทศกาลที่มีชื่อเสียงของประเทศไทย', hintTh:'งานเฉลิมฉลองที่จัดเป็นประจำ เช่น สงกรานต์ ลอยกระทง', category:'Society', emoji:'🎆', pos:'n'},
+  {word:'tradition', thai:'ประเพณี', example:'Giving flowers to teachers is a beautiful Thai tradition.', exampleTh:'การมอบดอกไม้ให้ครูเป็นประเพณีไทยที่งดงาม', hintTh:'ธรรมเนียมที่ทำสืบต่อกันมาหลายรุ่น', category:'Society', emoji:'🏮', pos:'n'},
+  // ---- Emotions ----
+  {word:'exhausted', thai:'เหนื่อยล้ามาก', example:'After the marathon, he felt completely exhausted.', exampleTh:'หลังวิ่งมาราธอน เขารู้สึกเหนื่อยล้าอย่างหมดแรง', hintTh:'รู้สึกอ่อนเพลียจนไม่มีแรงเหลือ', category:'Emotions', emoji:'😫', pos:'adj'},
+  {word:'delighted', thai:'ดีใจมาก', example:'She was delighted to win first prize.', exampleTh:'เธอดีใจมากที่ได้รางวัลที่หนึ่ง', hintTh:'รู้สึกมีความสุขมาก ๆ', category:'Emotions', emoji:'😄', pos:'adj'},
+  {word:'furious', thai:'โกรธจัด', example:'He was furious when someone broke his phone on purpose.', exampleTh:'เขาโกรธจัดเมื่อมีคนจงใจทำโทรศัพท์ของเขาพัง', hintTh:'โกรธรุนแรงจนควบคุมอารมณ์ได้ยาก', category:'Emotions', emoji:'😡', pos:'adj'},
+  {word:'embarrassed', thai:'รู้สึกอาย', example:'I felt embarrassed when I forgot my lines on stage.', exampleTh:'ฉันรู้สึกอายเมื่อลืมบทพูดบนเวที', hintTh:'รู้สึกเขินเมื่อทำอะไรพลาดต่อหน้าคนอื่น', category:'Emotions', emoji:'😳', pos:'adj'},
+  {word:'lonely', thai:'รู้สึกเหงา', example:'He felt lonely in the new city without friends.', exampleTh:'เขารู้สึกเหงาในเมืองใหม่ที่ไม่มีเพื่อน', hintTh:'รู้สึกเดียวดายเพราะไม่มีใครอยู่ข้าง ๆ', category:'Emotions', emoji:'😔', pos:'adj'},
+  {word:'curious', thai:'ช่างสงสัย', example:'The curious child asked many questions about space.', exampleTh:'เด็กช่างสงสัยถามคำถามมากมายเกี่ยวกับอวกาศ', hintTh:'อยากรู้อยากเห็นและชอบตั้งคำถาม', category:'Emotions', emoji:'🤔', pos:'adj'},
+  // ---- Food ----
+  {word:'ingredient', thai:'ส่วนผสม', example:'Fresh eggs are the main ingredient in this cake.', exampleTh:'ไข่สดเป็นส่วนผสมหลักของเค้กชิ้นนี้', hintTh:'วัตถุดิบแต่ละอย่างที่ใช้ปรุงอาหาร', category:'Food', emoji:'🧂', pos:'n'},
+  {word:'cuisine', thai:'อาหารประจำชาติ', example:'Thai cuisine is famous around the world.', exampleTh:'อาหารไทยมีชื่อเสียงไปทั่วโลก', hintTh:'รูปแบบการปรุงอาหารเฉพาะของแต่ละประเทศ', category:'Food', emoji:'🍜', pos:'n'},
+  {word:'beverage', thai:'เครื่องดื่ม', example:'Would you like a cold beverage?', exampleTh:'คุณอยากได้เครื่องดื่มเย็น ๆ ไหม', hintTh:'ของเหลวที่ดื่ม เช่น น้ำผลไม้ ชา', category:'Food', emoji:'🥤', pos:'n'},
+  {word:'dessert', thai:'ของหวาน', example:'Mango sticky rice is my favorite dessert.', exampleTh:'ข้าวเหนียวมะม่วงเป็นของหวานที่ฉันชอบที่สุด', hintTh:'อาหารรสหวานที่กินหลังมื้อหลัก', category:'Food', emoji:'🍰', pos:'n'},
+  {word:'vegetarian', thai:'ผู้กินมังสวิรัติ', example:'My sister is a vegetarian and never eats meat.', exampleTh:'น้องสาวของฉันเป็นมังสวิรัติและไม่กินเนื้อสัตว์เลย', hintTh:'คนที่ไม่กินเนื้อสัตว์', category:'Food', emoji:'🥦', pos:'n'},
+  {word:'restaurant', thai:'ร้านอาหาร', example:'We had dinner at a nice restaurant.', exampleTh:'เราทานมื้อค่ำที่ร้านอาหารดี ๆ', hintTh:'ร้านที่เรานั่งกินอาหารที่ปรุงให้', category:'Food', emoji:'🍽️', pos:'n'}
+];
+
+// ด่านทั้ง 5 + โหมดทบทวน
+// limit = เวลาต่อข้อ (ถ้า strict=true หมดเวลา = ผิด), speed = ตอบภายในกี่วินาทีถึงได้ Speed Bonus
+const STAGES = [
+  {id:1, name:'WORD FOREST', icon:'🌳', desc:'จับคู่รูปภาพกับคำศัพท์',                type:'pic',  limit:0,  strict:false, speed:5},
+  {id:2, name:'WORD CITY',   icon:'🏙️', desc:'อ่านคำอังกฤษ แล้วเลือกความหมายภาษาไทย', type:'th',   limit:0,  strict:false, speed:5},
+  {id:3, name:'WORD SPACE',  icon:'🚀', desc:'จับเวลา 10 วินาที • Speed Bonus & Combo', type:'mix2', limit:10, strict:true,  speed:5},
+  {id:4, name:'WORD CASTLE', icon:'🏰', desc:'เติมคำศัพท์ลงในประโยค',                 type:'fill', limit:0,  strict:false, speed:8},
+  {id:5, name:'FINAL BOSS',  icon:'👑', desc:'รวมทุกหมวด 10 ข้อ • ต้องทำให้ถึง 1,000 คะแนน', type:'all', limit:12, strict:true, speed:6, boss:true, pass:1000}
+];
+const REVIEW_STAGE = {id:'review', name:'REVIEW MODE', icon:'🔁', desc:'ทบทวนคำที่เคยตอบผิด', type:'all', limit:0, strict:false, speed:6};
+
+const ACH = [
+  {id:'first_win',    icon:'🎯', name:'First Win',            desc:'ชนะเกมครั้งแรก'},
+  {id:'combo_master', icon:'🔥', name:'Combo Master',         desc:'ตอบถูกติดต่อกัน 5 ข้อ'},
+  {id:'speed_demon',  icon:'⚡', name:'Speed Demon',          desc:'ตอบถูกภายในเวลาที่กำหนด'},
+  {id:'collector',    icon:'📚', name:'Word Collector',       desc:'ปลดล็อกคำศัพท์ 20 คำ'},
+  {id:'champion',     icon:'👑', name:'Vocabulary Champion',  desc:'ผ่าน Final Boss'},
+  {id:'perfect',      icon:'💎', name:'Perfect Run',          desc:'ผ่านด่านโดยไม่ตอบผิดเลย'},
+  {id:'scholar',      icon:'🎓', name:'Word Scholar',         desc:'ปลดล็อกคำศัพท์ครบ 60 คำ'}
+];
+
+const RANKS = [
+  {min:1500, icon:'👑', name:'ENGLISH CHAMPION'},
+  {min:1000, icon:'🥇', name:'WORD MASTER'},
+  {min:500,  icon:'🥈', name:'WORD EXPLORER'},
+  {min:0,    icon:'🥉', name:'BEGINNER'}
+];
+
+const HINT_COST = 20;
+const SPEED_BONUS = 30;
+const XP_PER_PLAYER_LEVEL = 500;
+
+/* =====================================================================
+   4. GAME STATE
+   ===================================================================== */
+const KEY = 'english_word_hunter_v1';
+const LB_KEY = 'english_word_hunter_lb_v1';
+const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = id => document.getElementById(id);
+
+let save = loadSave();     // ข้อมูลถาวร (localStorage)
+let G = null;              // สถานะรอบที่กำลังเล่น
+let currentScreen = 'welcome';
+let lastCorrectPos = -1;   // ตำแหน่งคำตอบถูกข้อก่อนหน้า (กันซ้ำตำแหน่งเดิม)
+let vocabFilter = 'all';
+let lastRun = null;        // {stageId, outcome} ใช้กับปุ่มหน้าผลลัพธ์
+
+/* ---------- helpers ---------- */
+const rand = (a, b) => Math.random() * (b - a) + a;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+function shuffle(arr){ const a = arr.slice(); for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function fmtTime(s){ s = Math.max(0, Math.floor(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function playerLevel(xp){ return Math.floor(xp / XP_PER_PLAYER_LEVEL) + 1; }
+function rankFor(xp){ return RANKS.find(r => xp >= r.min); }
+function comboBonus(n){ return n >= 5 ? 100 : n === 4 ? 60 : n === 3 ? 40 : n === 2 ? 20 : 0; }
+function stageById(id){ return id === 'review' ? REVIEW_STAGE : STAGES.find(s => s.id === id); }
+
+/* =====================================================================
+   15. LOCALSTORAGE
+   ===================================================================== */
+function defaultSave(){
+  return {name:'', xp:0, coins:30, unlocked:[1], cleared:{}, stars:{}, vocab:{}, wrongWords:[],
+          achievements:{}, bestScore:0, bestCombo:0, totalAnswered:0, totalCorrect:0, sound:true, lastWord:''};
+}
+function loadSave(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const o = Object.assign(defaultSave(), JSON.parse(raw));
+      if(!Array.isArray(o.unlocked) || !o.unlocked.includes(1)) o.unlocked = [1].concat(Array.isArray(o.unlocked) ? o.unlocked : []);
+      if(!Array.isArray(o.wrongWords)) o.wrongWords = [];
+      ['cleared','stars','vocab','achievements'].forEach(k => { if(!o[k] || typeof o[k] !== 'object') o[k] = {}; });
+      return o;
+    }
+  }catch(e){}
+  return defaultSave();
+}
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(save)); }catch(e){} }
+function loadBoard(){ try{ const a = JSON.parse(localStorage.getItem(LB_KEY) || '[]'); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+function saveBoard(a){ try{ localStorage.setItem(LB_KEY, JSON.stringify(a)); }catch(e){} }
+
+/* =====================================================================
+   17. SOUND (Web Audio API — ไม่ใช้ไฟล์เสียง)
+   ===================================================================== */
+const Sound = (() => {
+  let ctx = null;
+  function ensure(){
+    if(!ctx){ try{ ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return null; } }
+    if(ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function tone(freq, start, dur, type, vol){
+    if(!save.sound) return;
+    const c = ensure(); if(!c) return;
+    const t = c.currentTime + start;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.15, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + dur + 0.03);
+  }
+  return {
+    click(){ tone(520, 0, .05, 'sine', .07); },
+    correct(){ tone(660, 0, .12, 'triangle', .16); tone(880, .1, .2, 'triangle', .16); },
+    wrong(){ tone(220, 0, .22, 'sawtooth', .09); tone(150, .16, .3, 'sawtooth', .09); },
+    coin(){ tone(1250, 0, .08, 'square', .05); tone(1700, .07, .16, 'square', .05); },
+    level(){ [523, 659, 784, 1047].forEach((f, i) => tone(f, i * .12, .22, 'triangle', .16)); },
+    victory(){ [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, i * .13, .26, 'triangle', .17)); tone(1568, .95, .6, 'sine', .14); }
+  };
+})();
+
+/* =====================================================================
+   16. TEXT-TO-SPEECH (Web Speech API, en-US)
+   ===================================================================== */
+function speak(text){
+  if(!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined'){ toast('เบราว์เซอร์นี้ไม่รองรับการออกเสียง'); return; }
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    const vs = speechSynthesis.getVoices();
+    const v = vs.find(x => x.lang === 'en-US') || vs.find(x => x.lang && x.lang.indexOf('en') === 0);
+    if(v) u.voice = v;
+    speechSynthesis.speak(u);
+  }catch(e){ toast('ไม่สามารถออกเสียงได้ในขณะนี้'); }
+}
+
+/* =====================================================================
+   18. ANIMATION — พื้นหลัง 3D, confetti, toast, ลอยคะแนน, เหรียญบิน
+   ===================================================================== */
+const bg = $('bg'), bgc = bg.getContext('2d'), fx = $('fx'), fxc = fx.getContext('2d');
+let W = 0, H = 0, dpr = 1, stars = [];
+function resizeCanvases(){
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  W = window.innerWidth; H = window.innerHeight;
+  [bg, fx].forEach(c => { c.width = W * dpr; c.height = H * dpr; c.style.width = W + 'px'; c.style.height = H + 'px'; c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0); });
+  stars = Array.from({length: W < 600 ? 70 : 130}, () => ({x: rand(-1, 1), y: rand(-1, 1), z: rand(.05, 1), h: pick([45, 190, 290])}));
+}
+// พื้นหลัง: ดาวพุ่งเข้าหาผู้เล่น (perspective projection) + กริดพื้น 3D
+function bgLoop(t){
+  bgc.clearRect(0, 0, W, H);
+  const hy = H * .74, cx = W / 2, cy = H * .42, f = Math.max(W, H) * .5;
+  bgc.strokeStyle = 'rgba(120,200,255,.14)'; bgc.lineWidth = 1; bgc.beginPath();
+  for(let i = -14; i <= 14; i++){ bgc.moveTo(cx, hy); bgc.lineTo(cx + i * W * .11, H); }
+  const off = reduceMotion ? 0 : (t / 3000) % 1;
+  for(let j = 0; j < 10; j++){ const p = (j + off) / 10; const y = hy + (H - hy) * p * p; bgc.moveTo(0, y); bgc.lineTo(W, y); }
+  bgc.stroke();
+  for(const s of stars){
+    if(!reduceMotion) s.z -= .0014;
+    if(s.z <= .03){ s.z = 1; s.x = rand(-1, 1); s.y = rand(-1, 1); }
+    const k = f / (s.z * 1.25);
+    const px = cx + s.x * k * .6, py = cy + s.y * k * .6;
+    bgc.globalAlpha = Math.min(1, (1 - s.z) * 1.5);
+    bgc.fillStyle = 'hsl(' + s.h + ',90%,82%)';
+    bgc.beginPath(); bgc.arc(px, py, Math.max(.5, (1 - s.z) * 3), 0, 6.283); bgc.fill();
+  }
+  bgc.globalAlpha = 1;
+  requestAnimationFrame(bgLoop);
+}
+
+let parts = [], fxRun = false;
+function confetti(n, x, y){
+  n = n || 120; if(reduceMotion) n = Math.min(n, 24);
+  x = x == null ? W / 2 : x; y = y == null ? H * .35 : y;
+  const cols = ['#22d3ee', '#f472b6', '#fbbf24', '#34d399', '#a78bfa', '#fb7185'];
+  for(let i = 0; i < n; i++) parts.push({x, y, vx: rand(-7, 7), vy: rand(-14, -3), g: .38, s: rand(6, 12), c: cols[i % cols.length], r: rand(0, 6.28), vr: rand(-.3, .3), life: rand(70, 130)});
+  if(!fxRun){ fxRun = true; requestAnimationFrame(fxLoop); }
+}
+function fxLoop(){
+  fxc.clearRect(0, 0, W, H);
+  parts = parts.filter(p => p.life > 0 && p.y < H + 40);
+  for(const p of parts){
+    p.vy += p.g; p.x += p.vx; p.y += p.vy; p.r += p.vr; p.life--; p.vx *= .99;
+    fxc.save(); fxc.translate(p.x, p.y); fxc.rotate(p.r); fxc.fillStyle = p.c; fxc.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); fxc.restore();
+  }
+  if(parts.length) requestAnimationFrame(fxLoop); else { fxRun = false; fxc.clearRect(0, 0, W, H); }
+}
+
+function toast(msg, cls){
+  const t = document.createElement('div');
+  t.className = 'toast' + (cls ? ' ' + cls : '');
+  t.textContent = msg;
+  $('toasts').appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 320); }, 2600);
+}
+function floatText(txt, cls){
+  const el = document.createElement('div');
+  el.className = 'float ' + cls; el.textContent = txt;
+  $('qStage').appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+function flyCoins(n){
+  const from = $('qCard').getBoundingClientRect(), to = $('tbCoinChip').getBoundingClientRect();
+  const count = Math.min(5, Math.max(2, Math.round(n / 5)));
+  for(let i = 0; i < count; i++){
+    const c = document.createElement('div');
+    c.className = 'flycoin'; c.textContent = '🪙';
+    const sx = from.left + from.width / 2 + rand(-40, 40), sy = from.top + from.height / 2 + rand(-20, 20);
+    const ex = to.left + to.width / 2, ey = to.top + to.height / 2;
+    c.style.left = sx + 'px'; c.style.top = sy + 'px';
+    document.body.appendChild(c);
+    if(c.animate){
+      const a = c.animate([{transform: 'translate(0,0) scale(1)', opacity: 1}, {transform: 'translate(' + (ex - sx) + 'px,' + (ey - sy) + 'px) scale(.5)', opacity: .9}],
+        {duration: 700 + i * 90, delay: i * 70, easing: 'cubic-bezier(.5,-0.3,.6,1)', fill: 'forwards'});
+      a.onfinish = () => { c.remove(); const ch = $('tbCoinChip'); ch.classList.remove('bump'); void ch.offsetWidth; ch.classList.add('bump'); };
+    } else c.remove();
+  }
+}
+function countUp(el, to, ms, prefix, suffix){
+  prefix = prefix || ''; suffix = suffix || '';
+  if(reduceMotion || to === 0){ el.textContent = prefix + to.toLocaleString('en-US') + suffix; return; }
+  const t0 = performance.now();
+  (function step(now){
+    const p = Math.max(0, Math.min(1, (now - t0) / ms));
+    el.textContent = prefix + Math.round(to * (1 - Math.pow(1 - p, 3))).toLocaleString('en-US') + suffix;
+    if(p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* =====================================================================
+   19. RESPONSIVE UI — จอ/โมดัล/เมนู
+   ===================================================================== */
+function show(name){
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
+  $('topbar').classList.toggle('hidden', name === 'welcome');
+  window.scrollTo(0, 0);
+  updateTopbar();
+}
+function go(name){
+  if(name === 'home') renderHome();
+  if(name === 'vocab') renderVocab();
+  if(name === 'board') renderBoard();
+  if(name === 'profile') renderProfile();
+  show(name);
+}
+function updateTopbar(){
+  $('tbLv').textContent = playerLevel(save.xp);
+  $('tbXp').style.width = ((save.xp % XP_PER_PLAYER_LEVEL) / XP_PER_PLAYER_LEVEL * 100) + '%';
+  $('tbCoins').textContent = save.coins;
+  $('soundBtn').textContent = save.sound ? '🔊' : '🔇';
+  if(G && currentScreen === 'game') $('gCoins').textContent = save.coins;
+}
+function openModal(title, html, buttons){
+  $('mTitle').textContent = title;
+  $('mBody').innerHTML = html;
+  const mb = $('mBtns'); mb.innerHTML = '';
+  buttons.forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'btn ' + (b.cls || 'btn-ghost') + ' small';
+    el.textContent = b.label;
+    el.onclick = () => { const keep = b.onClick ? b.onClick() : null; if(keep !== false) closeModal(); };
+    mb.appendChild(el);
+  });
+  $('modal').classList.add('open');
+}
+function closeModal(){ $('modal').classList.remove('open'); }
+
+/* =====================================================================
+   5. QUESTION SYSTEM — สุ่มคำถาม ไม่ซ้ำติดกัน, สุ่มตำแหน่งตัวเลือก
+   ===================================================================== */
+function pickWords(st){
+  if(st.id === 'review'){
+    const ws = save.wrongWords.map(w => WORDS.find(x => x.word === w)).filter(Boolean);
+    return shuffle(ws).slice(0, 10);
+  }
+  if(st.boss){ // บอส: ทุกหมวดหมวดละ 1 ข้อ (10 หมวด = 10 ข้อ) ให้น้ำหนักคำที่เคยผิด
+    return shuffle(Object.keys(CAT).map(c => {
+      const list = WORDS.filter(w => w.category === c);
+      const wrong = list.filter(w => save.wrongWords.includes(w.word));
+      return pick(wrong.length && Math.random() < .6 ? wrong : list);
+    }));
+  }
+  const wrongs = shuffle(WORDS.filter(w => save.wrongWords.includes(w.word))).slice(0, 2); // ทบทวนแทรก 2 คำ
+  const rest = shuffle(WORDS.filter(w => !wrongs.includes(w)));
+  return shuffle(wrongs.concat(rest.slice(0, 10 - wrongs.length)));
+}
+function typesFor(st, n){
+  if(st.type === 'pic' || st.type === 'th' || st.type === 'fill') return Array(n).fill(st.type);
+  if(st.type === 'mix2') return shuffle(Array.from({length: n}, (_, i) => i % 2 ? 'pic' : 'th'));
+  return shuffle(Array.from({length: n}, (_, i) => ['pic', 'th', 'fill'][i % 3]));
+}
+function makeQuestion(w, type){
+  const isTh = type === 'th';
+  const txt = x => isTh ? x.thai : x.word;
+  const correct = txt(w);
+  const cands = WORDS.filter(x => x.word !== w.word);
+  const used = new Set([correct]);
+  const d = [];
+  const take = (list, n) => { for(const x of shuffle(list)){ if(d.length >= n) break; const t = txt(x); if(!used.has(t)){ used.add(t); d.push(t); } } };
+  if(type === 'fill'){
+    const samePos = cands.filter(x => x.pos === w.pos);
+    take(samePos.filter(x => x.category !== w.category), 3);
+    take(samePos, 3);
+    take(cands, 3);
+  } else {
+    take(cands.filter(x => x.category === w.category), 2); // ตัวเลือกหลอกจากหมวดเดียวกัน 2 ตัว
+    take(cands.filter(x => x.category !== w.category), 3);
+    take(cands, 3);
+  }
+  const base = [{text: correct, correct: true}].concat(d.map(t => ({text: t, correct: false})));
+  let opts, tries = 0;
+  do{ opts = shuffle(base); tries++; }while(opts.findIndex(o => o.correct) === lastCorrectPos && tries < 8);
+  lastCorrectPos = opts.findIndex(o => o.correct);
+  return {w, type, options: opts, answerText: correct};
+}
+function blankSentence(w){
+  return w.example.replace(new RegExp('\\b' + w.word + '\\b', 'i'), '<span class="blank" id="blank">_____</span>');
+}
+
+/* =====================================================================
+   START / RENDER QUESTION
+   ===================================================================== */
+function startStage(id){
+  const st = stageById(id);
+  if(id !== 'review' && !save.unlocked.includes(id)){ toast('ด่านนี้ยังล็อกอยู่ 🔒 ผ่านด่านก่อนหน้าก่อนนะ'); return; }
+  let words = pickWords(st);
+  if(!words.length){ toast('ยังไม่มีคำที่ต้องทบทวน — เยี่ยมมาก! 🎉'); return; }
+  if(words.length > 1 && words[0].word === save.lastWord){ const j = words.length - 1; [words[0], words[j]] = [words[j], words[0]]; } // ไม่ซ้ำข้อสุดท้ายรอบก่อน
+  lastCorrectPos = -1;
+  const types = typesFor(st, words.length);
+  G = {
+    stage: st, qs: words.map((w, i) => makeQuestion(w, types[i])), i: 0,
+    hearts: 3, score: 0, bonusXp: 0, coinsGain: 0, combo: 0, maxCombo: 0,
+    correct: 0, answered: 0, wrongCount: 0, speedHits: 0, hinted: {}, locked: false,
+    timerId: null, qStart: 0, startTime: Date.now(), over: false, bossDown: false
+  };
+  $('gStage').textContent = st.icon + ' ' + st.name;
+  renderHearts(-1); renderCombo(); updateHUD();
+  show('game');
+  showQuestion();
+}
+function renderHearts(lostIdx){
+  const h = $('gHearts'); h.innerHTML = '';
+  for(let i = 0; i < 3; i++){
+    const s = document.createElement('span');
+    s.className = 'heart' + (i < G.hearts ? '' : ' empty') + (i === lostIdx ? ' lost' : '');
+    s.textContent = i < G.hearts ? '❤️' : '🖤';
+    h.appendChild(s);
+  }
+}
+function renderCombo(){
+  const c = $('gCombo');
+  if(G && G.combo >= 2){ c.textContent = '🔥 COMBO x' + G.combo; c.className = 'combo on lv' + Math.min(G.combo, 6); c.style.animation = 'none'; void c.offsetWidth; c.style.animation = ''; }
+  else { c.textContent = ''; c.className = 'combo'; }
+}
+function updateProgress(){
+  const st = G.stage, bar = $('progBar');
+  if(st.boss){
+    const hp = Math.max(0, 1 - G.score / st.pass);
+    bar.style.width = (hp * 100) + '%'; bar.className = 'boss';
+    $('progRight').textContent = '👑 BOSS HP ' + Math.round(hp * 100) + '%';
+  } else {
+    bar.style.width = (G.answered / G.qs.length * 100) + '%'; bar.className = '';
+    $('progRight').textContent = '✔ ถูก ' + G.correct;
+  }
+}
+function updateHUD(){
+  if(!G) return;
+  $('gScore').textContent = G.score.toLocaleString('en-US');
+  $('gCoins').textContent = save.coins;
+  updateProgress();
+}
+function showQuestion(){
+  const st = G.stage, q = G.qs[G.i];
+  G.locked = false; G.hinted = {};
+  $('qNum').textContent = 'ข้อ ' + (G.i + 1) + ' / ' + G.qs.length;
+  updateProgress();
+  const vis = $('qVisual'), pr = $('qPrompt'), cat = $('qCat'), sp = $('qSpeak');
+  cat.textContent = CAT[q.w.category].icon + ' ' + CAT[q.w.category].th;
+  $('qHint').textContent = ''; $('qHint').classList.remove('on');
+  if(q.type === 'pic'){
+    vis.className = 'q-visual emoji'; vis.textContent = q.w.emoji;
+    pr.textContent = 'What is this?  •  สิ่งนี้คืออะไร'; sp.classList.add('hidden');
+  } else if(q.type === 'th'){
+    vis.className = 'q-visual word'; vis.textContent = q.w.word;
+    pr.textContent = POS_TH[q.w.pos] + '  •  เลือกความหมายภาษาไทย';
+    sp.classList.remove('hidden'); sp.onclick = () => speak(q.w.word);
+  } else {
+    vis.className = 'q-visual sentence'; vis.innerHTML = blankSentence(q.w);
+    pr.textContent = 'Fill in the blank  •  เติมคำในช่องว่าง'; sp.classList.add('hidden');
+  }
+  const box = $('options'); box.innerHTML = '';
+  q.options.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'opt' + (q.type === 'th' ? '' : ' en');
+    const k = document.createElement('span'); k.className = 'key'; k.textContent = 'ABCD'[i];
+    const t = document.createElement('span'); t.className = 'otxt'; t.textContent = o.text;
+    b.appendChild(k); b.appendChild(t);
+    b.onclick = () => answer(i);
+    box.appendChild(b);
+  });
+  $('feedback').classList.add('hidden');
+  $('hints').classList.remove('hidden');
+  refreshHints();
+  const face = $('qFace');
+  face.classList.remove('enter', 'good', 'bad'); void face.offsetWidth; face.classList.add('enter');
+  startTimer();
+}
+
+/* =====================================================================
+   6. TIMER
+   ===================================================================== */
+function startTimer(){
+  stopTimer();
+  G.qStart = performance.now();
+  G.timerId = setInterval(tick, 100);
+  tick();
+}
+function stopTimer(){ if(G && G.timerId){ clearInterval(G.timerId); G.timerId = null; } }
+function tick(){
+  if(!G || G.locked || G.over) return;
+  const st = G.stage, el = (performance.now() - G.qStart) / 1000;
+  $('gClock').textContent = fmtTime((Date.now() - G.startTime) / 1000);
+  const bar = $('tBar');
+  if(st.strict){
+    const left = Math.max(0, st.limit - el), f = left / st.limit;
+    bar.style.width = (f * 100) + '%'; bar.className = f < .25 ? 'low' : f < .5 ? 'mid' : '';
+    $('tLabel').textContent = '⏱ ' + Math.ceil(left) + ' วินาที';
+    if(left <= 0) onTimeout();
+  } else {
+    const f = Math.max(0, 1 - el / st.speed);
+    bar.style.width = (f * 100) + '%'; bar.className = f < .25 ? 'low' : f < .5 ? 'mid' : '';
+    $('tLabel').textContent = f > 0 ? '⚡ Speed Bonus' : '— ไม่จำกัดเวลา';
+  }
+}
+function onTimeout(){ if(G && !G.locked && !G.over) resolve(false, true, -1); }
+
+/* =====================================================================
+   7-10. SCORE / COMBO / HEART / COIN — ตรวจคำตอบ
+   ===================================================================== */
+function addXp(n){
+  const before = playerLevel(save.xp);
+  save.xp += n;
+  const after = playerLevel(save.xp);
+  if(after > before){ toast('⬆️ LEVEL UP! ตอนนี้ LV ' + after, 'ach'); Sound.level(); confetti(80); }
+}
+function answer(idx){
+  if(!G || G.locked || G.over) return;
+  const q = G.qs[G.i];
+  if(q.options[idx].gone) return;
+  resolve(q.options[idx].correct, false, idx);
+}
+function resolve(ok, timedOut, chosen){
+  const st = G.stage, q = G.qs[G.i], w = q.w;
+  G.locked = true; stopTimer();
+  const elapsed = timedOut ? st.limit : (performance.now() - G.qStart) / 1000;
+  G.answered++; save.totalAnswered++;
+  const rec = save.vocab[w.word] || (save.vocab[w.word] = {seen: 0, correct: 0, wrong: 0}); // ปลดล็อกคำใน Vocabulary Book
+  rec.seen++;
+  const info = {pts: 0, speed: 0, combo: 0, coins: 0};
+
+  // อัปเดตปุ่มตัวเลือก
+  const btns = $('options').children;
+  for(let i = 0; i < btns.length; i++){
+    btns[i].disabled = true;
+    if(q.options[i].correct) btns[i].classList.add('correct');
+    else if(i === chosen) btns[i].classList.add('wrong');
+    else if(!btns[i].classList.contains('gone')) btns[i].classList.add('dim');
+  }
+  const bl = $('blank'); if(bl){ bl.textContent = w.word; bl.classList.add('ok'); }
+
+  if(ok){
+    G.correct++; save.totalCorrect++; rec.correct++;
+    G.combo++; if(G.combo > G.maxCombo) G.maxCombo = G.combo; if(G.combo > save.bestCombo) save.bestCombo = G.combo;
+    info.pts = 100;
+    if(elapsed <= st.speed){ info.speed = SPEED_BONUS; G.speedHits++; }
+    info.combo = comboBonus(G.combo);
+    const total = info.pts + info.speed + info.combo;
+    G.score += total; addXp(total);
+    info.coins = (st.boss ? 15 : 10) + (info.speed ? 5 : 0);
+    G.coinsGain += info.coins; save.coins += info.coins;
+    save.wrongWords = save.wrongWords.filter(x => x !== w.word);
+    $('qFace').classList.remove('enter'); $('qFace').classList.add('good');
+    floatText('+' + total + ' XP', 'good');
+    Sound.correct(); setTimeout(Sound.coin, 220);
+    flyCoins(info.coins);
+    if(G.combo >= 2) confetti(G.combo >= 5 ? 60 : 24, undefined, H * .3);
+    else confetti(18, undefined, H * .3);
+    if(st.boss && !G.bossDown && G.score >= st.pass){ G.bossDown = true; toast('💥 Boss HP หมดแล้ว! ตอบให้ครบทุกข้อเพื่อชนะ'); }
+    if(G.combo === 5) toast('🔥 COMBO x5!');
+  } else {
+    G.wrongCount++; rec.wrong++; G.combo = 0; G.hearts--;
+    if(!save.wrongWords.includes(w.word)) save.wrongWords.push(w.word);
+    $('qFace').classList.remove('enter'); $('qFace').classList.add('bad');
+    floatText(timedOut ? '⏰ หมดเวลา!' : '💔 -1', 'bad');
+    Sound.wrong();
+    renderHearts(G.hearts);
+  }
+  renderCombo();
+  persist();
+  checkAchievements();
+  updateTopbar(); updateHUD();
+  $('hints').classList.add('hidden');
+  renderFeedback(q, ok, timedOut, info);
+}
+function renderFeedback(q, ok, timedOut, info){
+  const f = $('feedback'), w = q.w;
+  f.className = 'feedback glass ' + (ok ? 'ok' : 'bad');
+  const sentence = esc(w.example).replace(new RegExp('\\b' + w.word + '\\b', 'i'), m => '<b>' + m + '</b>');
+  const head = ok ? '✅ Correct!' : (timedOut ? '⏰ หมดเวลา! ' : '❌ ยังไม่ถูกนะ ') + (ok ? '' : 'คำตอบที่ถูกคือ <b>' + esc(q.answerText) + '</b>');
+  let chips = '';
+  if(ok){
+    chips = '<span class="chip-s xp">+' + (info.pts + info.speed + info.combo) + ' XP</span><span class="chip-s coin">🪙 +' + info.coins + '</span>'
+      + (info.speed ? '<span class="chip-s spd">⚡ Speed +' + info.speed + '</span>' : '')
+      + (info.combo ? '<span class="chip-s cmb">🔥 Combo x' + G.combo + ' +' + info.combo + '</span>' : '');
+  } else chips = '<span class="chip-s lose">💔 -1 Heart</span>' + (G.hearts > 0 ? '<span class="chip-s">เหลือ ' + G.hearts + ' ดวง</span>' : '');
+  const last = G.i >= G.qs.length - 1;
+  const label = G.hearts <= 0 ? 'GAME OVER ▶' : last ? 'ดูผลลัพธ์ 🏁' : 'ข้อต่อไป ▶';
+  f.innerHTML =
+    '<div class="fb-head">' + head + '</div><div class="fb-chips">' + chips + '</div>'
+    + '<div class="fb-word"><span class="fb-emoji">' + w.emoji + '</span><div><div class="fb-en">' + w.word.toUpperCase()
+    + ' <button class="speak sm" data-say="' + w.word + '" aria-label="ฟังเสียง">🔊</button></div><div class="fb-th">' + esc(w.thai) + '</div></div></div>'
+    + '<div class="fb-ex">“' + sentence + '”<br><span>' + esc(w.exampleTh) + '</span></div>'
+    + '<button class="btn btn-green big" id="btnNext">' + label + '</button>';
+  $('btnNext').onclick = next;
+  setTimeout(() => { const n = $('btnNext'); if(n){ n.focus({preventScroll: true}); } f.scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest'}); }, 60);
+}
+function next(){
+  if(!G || !G.locked || G.over) return;
+  if(G.hearts <= 0){ finish(); return; }
+  G.i++;
+  if(G.i >= G.qs.length){ finish(); return; }
+  showQuestion();
+  window.scrollTo({top: 0, behavior: reduceMotion ? 'auto' : 'smooth'});
+}
+
+/* =====================================================================
+   11. HINT SYSTEM
+   ===================================================================== */
+function refreshHints(){
+  ['fifty', 'thai', 'first'].forEach(k => {
+    const b = $('hint-' + k), used = !!(G && G.hinted[k]);
+    b.disabled = !G || G.locked || used || save.coins < HINT_COST;
+    b.classList.toggle('used', used);
+  });
+}
+function useHint(kind){
+  if(!G || G.locked || G.over || G.hinted[kind]) return;
+  if(save.coins < HINT_COST){ toast('เหรียญไม่พอ ต้องใช้ ' + HINT_COST + ' 🪙'); return; }
+  const q = G.qs[G.i], w = q.w;
+  save.coins -= HINT_COST; G.hinted[kind] = true;
+  if(kind === 'fifty'){
+    const wrongIdx = shuffle(q.options.map((o, i) => i).filter(i => !q.options[i].correct && !q.options[i].gone)).slice(0, 2);
+    wrongIdx.forEach(i => { q.options[i].gone = true; const b = $('options').children[i]; b.classList.add('gone'); b.disabled = true; });
+  } else {
+    const h = $('qHint');
+    if(kind === 'thai') h.textContent = '💡 ' + (q.type === 'fill' ? w.exampleTh : w.hintTh);
+    else h.textContent = '🔤 ตัวอักษรแรกของคำตอบคือ “' + (q.type === 'th' ? (/[เแโไใ]/.test(q.answerText.charAt(0)) ? q.answerText.slice(0, 2) : q.answerText.charAt(0)) : q.answerText.charAt(0).toUpperCase()) + '”';
+    h.classList.add('on');
+  }
+  Sound.coin(); persist(); updateTopbar(); $('gCoins').textContent = save.coins; refreshHints();
+}
+
+/* =====================================================================
+   FINISH — สรุปผล, ปลดล็อกด่าน, Rank, Leaderboard
+   ===================================================================== */
+function finish(){
+  if(!G || G.over) return;
+  G.over = true; stopTimer();
+  const st = G.stage, elapsed = Math.round((Date.now() - G.startTime) / 1000);
+  let outcome;
+  if(G.hearts <= 0) outcome = 'over';
+  else if(st.id === 'review') outcome = 'review';
+  else if(st.pass && G.score < st.pass) outcome = 'short';
+  else outcome = 'win';
+
+  let coinB = 0;
+  if(outcome === 'win'){ G.bonusXp = st.boss ? 300 : 100; coinB = st.boss ? 150 : 40; }
+  if(outcome === 'review'){ G.bonusXp = 50; coinB = 10; }
+  if(G.bonusXp){ addXp(G.bonusXp); }
+  save.coins += coinB; G.coinsGain += coinB;
+
+  const xpTotal = G.score + G.bonusXp;
+  const finalScore = xpTotal + (G.hearts > 0 ? G.hearts * 50 : 0); // โบนัสหัวใจที่เหลือ
+  const rank = rankFor(xpTotal);
+  let newText = '';
+  let stars = 0;
+
+  if(outcome === 'win'){
+    save.cleared[st.id] = true;
+    stars = G.wrongCount === 0 ? 3 : G.wrongCount === 1 ? 2 : 1;
+    save.stars[st.id] = Math.max(save.stars[st.id] || 0, stars);
+    if(st.id < STAGES.length && !save.unlocked.includes(st.id + 1)){ save.unlocked.push(st.id + 1); newText = '🔓 ปลดล็อก LEVEL ' + (st.id + 1) + ' — ' + stageById(st.id + 1).name + ' แล้ว!'; }
+    unlockAch('first_win');
+    if(st.boss) unlockAch('champion');
+    if(G.wrongCount === 0) unlockAch('perfect');
+  }
+  checkAchievements();
+  if(finalScore > save.bestScore) save.bestScore = finalScore;
+  save.lastWord = G.qs[Math.min(G.i, G.qs.length - 1)].w.word;
+
+  if(finalScore > 0){ // บันทึก Leaderboard
+    const lb = loadBoard();
+    lb.push({id: Date.now() + Math.random(), name: save.name || 'Player', score: finalScore, xp: xpTotal, date: new Date().toISOString(), rank: rank.icon + ' ' + rank.name});
+    lb.sort((a, b) => b.score - a.score);
+    saveBoard(lb.slice(0, 50));
+  }
+  persist(); updateTopbar();
+
+  const acc = G.answered ? Math.round(G.correct / G.answered * 100) : 0;
+  lastRun = {stageId: st.id, outcome};
+  const banners = {
+    win: st.boss ? '👑 YOU WIN!' : '🎉 GAME COMPLETE!',
+    review: '🔁 REVIEW COMPLETE!',
+    short: '💪 เกือบแล้ว!',
+    over: '💀 GAME OVER'
+  };
+  const subs = {
+    win: st.boss ? 'Word Master ถูกพิชิตแล้ว! คุณคือ English Champion 🏆' : st.name + ' — ผ่านด่านสำเร็จ!',
+    review: 'ทบทวนคำศัพท์ครบแล้ว เก่งมาก!',
+    short: 'ยังไม่ถึงเกณฑ์ ' + (st.pass || 0).toLocaleString('en-US') + ' คะแนน เพื่อล้ม Boss — ลองอีกครั้งนะ!',
+    over: 'ไม่เป็นไร! ลองอีกครั้งแล้วเอาชนะให้ได้!'
+  };
+  $('rBanner').textContent = banners[outcome];
+  $('rSub').textContent = subs[outcome];
+  $('rStars').textContent = outcome === 'win' ? '⭐'.repeat(stars) + '☆'.repeat(3 - stars) : '';
+  $('rNew').textContent = newText;
+  countUp($('rScore'), finalScore, 900);
+  countUp($('rXp'), xpTotal, 900, '+');
+  countUp($('rCoins'), G.coinsGain, 700, '+');
+  $('rAcc').textContent = acc + '%';
+  $('rCombo').textContent = 'x' + G.maxCombo;
+  $('rTime').textContent = fmtTime(elapsed);
+  $('rRank').textContent = rank.icon + ' ' + rank.name;
+  $('rAgain').textContent = (outcome === 'over' || outcome === 'short') ? 'TRY AGAIN' : 'PLAY AGAIN';
+  const canNext = outcome === 'win' && typeof st.id === 'number' && st.id < STAGES.length;
+  $('rNext').classList.toggle('hidden', !canNext);
+  show('result');
+  if(outcome === 'win'){ st.boss ? Sound.victory() : Sound.level(); confetti(st.boss ? 260 : 150); if(st.boss) setTimeout(() => confetti(160), 500); }
+  else if(outcome === 'review'){ Sound.level(); confetti(90); }
+  else if(outcome === 'over'){ Sound.wrong(); }
+}
+
+/* =====================================================================
+   13. ACHIEVEMENT
+   ===================================================================== */
+function unlockAch(id){
+  if(save.achievements[id]) return;
+  const a = ACH.find(x => x.id === id); if(!a) return;
+  save.achievements[id] = new Date().toISOString();
+  toast('🏅 Achievement ปลดล็อก: ' + a.icon + ' ' + a.name, 'ach');
+  Sound.level(); confetti(50);
+  persist();
+}
+function checkAchievements(){
+  const n = Object.keys(save.vocab).length;
+  if(save.bestCombo >= 5) unlockAch('combo_master');
+  if(G && G.speedHits > 0) unlockAch('speed_demon');
+  if(n >= 20) unlockAch('collector');
+  if(n >= WORDS.length) unlockAch('scholar');
+}
+
+/* =====================================================================
+   12/14. VOCABULARY BOOK / LEADERBOARD / PROFILE / HOME RENDER
+   ===================================================================== */
+function renderHome(){
+  const lv = playerLevel(save.xp), into = save.xp % XP_PER_PLAYER_LEVEL;
+  $('hAvatar').textContent = (save.name || '?').charAt(0).toUpperCase();
+  $('hName').textContent = save.name || 'Player';
+  $('hLv').textContent = lv; $('hXp').textContent = save.xp.toLocaleString('en-US');
+  $('hXpBar').style.width = (into / XP_PER_PLAYER_LEVEL * 100) + '%';
+  $('hXpNext').textContent = 'อีก ' + (XP_PER_PLAYER_LEVEL - into) + ' XP ถึง LV ' + (lv + 1);
+  $('hCoins').textContent = save.coins;
+  const map = $('map'); map.innerHTML = '';
+  STAGES.forEach(st => {
+    const locked = !save.unlocked.includes(st.id);
+    const b = document.createElement('button');
+    b.className = 'stage s' + st.id + (locked ? ' locked' : '');
+    const stars = save.stars[st.id] ? '⭐'.repeat(save.stars[st.id]) + '☆'.repeat(3 - save.stars[st.id]) : (locked ? '🔒 ล็อก' : '☆☆☆');
+    b.innerHTML = '<span class="s-ico">' + (locked ? '🔒' : st.icon) + '</span>'
+      + '<span class="s-body"><span class="s-num">LEVEL ' + st.id + (save.cleared[st.id] ? ' • ผ่านแล้ว ✔' : '') + '</span>'
+      + '<span class="s-name">' + st.name + '</span><span class="s-desc">' + st.desc + '</span><span class="s-stars">' + stars + '</span></span>'
+      + '<span class="s-go">' + (locked ? '' : '▶') + '</span>';
+    b.onclick = () => { Sound.click(); startStage(st.id); };
+    map.appendChild(b);
+  });
+  const n = save.wrongWords.length;
+  $('reviewCount').textContent = n ? '(' + n + ')' : '';
+}
+
+function renderVocab(){
+  const total = WORDS.length, got = Object.keys(save.vocab).length;
+  $('vProgress').textContent = 'ปลดล็อกแล้ว ' + got + ' / ' + total + ' คำ';
+  const fl = $('vFilters'); fl.innerHTML = '';
+  const chips = [['all', '📖 ทั้งหมด'], ['review', '⚠️ ควรทบทวน']].concat(Object.keys(CAT).map(c => [c, CAT[c].icon + ' ' + CAT[c].th]));
+  chips.forEach(([k, label]) => {
+    const b = document.createElement('button');
+    b.className = 'fchip' + (vocabFilter === k ? ' on' : ''); b.textContent = label;
+    b.onclick = () => { vocabFilter = k; renderVocab(); };
+    fl.appendChild(b);
+  });
+  let list = WORDS;
+  if(vocabFilter === 'review') list = WORDS.filter(w => save.wrongWords.includes(w.word));
+  else if(vocabFilter !== 'all') list = WORDS.filter(w => w.category === vocabFilter);
+  const grid = $('vGrid');
+  if(!list.length){ grid.innerHTML = '<div class="empty">ยังไม่มีคำในหมวดนี้ — เล่นเกมเพื่อสะสมคำศัพท์!</div>'; return; }
+  grid.innerHTML = list.map(w => {
+    const rec = save.vocab[w.word], c = CAT[w.category];
+    if(!rec) return '<div class="vcard glass lockedw"><div class="v-emoji">❓</div><div class="v-en">? ? ?</div><div class="v-th">ยังไม่พบคำนี้</div><div class="v-meta"><span>' + c.icon + ' ' + c.th + '</span></div></div>';
+    const status = save.wrongWords.includes(w.word) ? '⚠️ ควรทบทวน' : rec.correct > 0 ? '✅ จำได้แล้ว' : '👀 เคยเห็น';
+    return '<div class="vcard glass"><div class="v-emoji">' + w.emoji + '</div><div class="v-en">' + w.word + '</div><div class="v-th">' + esc(w.thai) + '</div>'
+      + '<div class="v-ex">“' + esc(w.example) + '”<br>' + esc(w.exampleTh) + '</div>'
+      + '<div class="v-meta"><span>' + c.icon + ' ' + c.th + '</span><span>' + w.pos + '.</span><span>' + status + '</span></div>'
+      + '<button class="btn btn-blue small" data-say="' + w.word + '">🔊 Listen</button></div>';
+  }).join('');
+}
+
+function renderBoard(){
+  const rows = loadBoard().sort((a, b) => b.score - a.score).slice(0, 10);
+  const box = $('lbList');
+  if(!rows.length){ box.innerHTML = '<div class="empty glass">ยังไม่มีอันดับ — เล่นให้จบสักด่านเพื่อขึ้นกระดานแรก! 🏆</div>'; return; }
+  const medals = ['🥇', '🥈', '🥉'];
+  box.innerHTML = rows.map((r, i) => {
+    const d = new Date(r.date).toLocaleDateString('th-TH', {day: 'numeric', month: 'short', year: '2-digit'});
+    return '<div class="lb-row' + (r.name === save.name ? ' me' : '') + '"><div class="lb-pos">' + (medals[i] || (i + 1)) + '</div>'
+      + '<div><div class="lb-name">' + esc(r.name) + '</div><div class="lb-meta">XP ' + (r.xp || 0).toLocaleString('en-US') + ' • ' + d + ' • ' + esc(r.rank) + '</div></div>'
+      + '<div class="lb-score">' + r.score.toLocaleString('en-US') + '<small>SCORE</small></div></div>';
+  }).join('');
+}
+
+function renderProfile(){
+  const lv = playerLevel(save.xp), into = save.xp % XP_PER_PLAYER_LEVEL;
+  $('pAvatar').textContent = (save.name || '?').charAt(0).toUpperCase();
+  $('pName').textContent = save.name || 'Player';
+  $('pLv').textContent = lv; $('pXp').textContent = save.xp.toLocaleString('en-US');
+  $('pXpBar').style.width = (into / XP_PER_PLAYER_LEVEL * 100) + '%';
+  const acc = save.totalAnswered ? Math.round(save.totalCorrect / save.totalAnswered * 100) : 0;
+  const cleared = Object.keys(save.cleared).length;
+  const stats = [
+    ['LEVEL', lv], ['XP', save.xp.toLocaleString('en-US')], ['COINS', '🪙 ' + save.coins], ['HEART', '❤️❤️❤️'],
+    ['WORDS', Object.keys(save.vocab).length + '/' + WORDS.length], ['ACCURACY', acc + '%'], ['BEST COMBO', 'x' + save.bestCombo],
+    ['BEST SCORE', save.bestScore.toLocaleString('en-US')], ['STAGES', cleared + '/' + STAGES.length]
+  ];
+  $('pStats').innerHTML = stats.map(s => '<div class="pstat"><label>' + s[0] + '</label><b>' + s[1] + '</b></div>').join('');
+  $('pAch').innerHTML = ACH.map(a => {
+    const got = save.achievements[a.id];
+    const d = got ? new Date(got).toLocaleDateString('th-TH', {day: 'numeric', month: 'short', year: '2-digit'}) : '';
+    return '<div class="ach' + (got ? '' : ' locked') + '"><span class="a-ico">' + (got ? a.icon : '🔒') + '</span><div><b>' + a.name + '</b><small>' + a.desc + (got ? ' • ' + d : '') + '</small></div></div>';
+  }).join('');
+}
+
+/* =====================================================================
+   WELCOME / RESET / LEAVE
+   ===================================================================== */
+function startFromWelcome(){
+  const inp = $('nameInput'), name = inp.value.trim().slice(0, 16);
+  if(!name){ inp.classList.remove('err'); void inp.offsetWidth; inp.classList.add('err'); toast('กรุณากรอกชื่อผู้เล่นก่อนเริ่มเกม'); inp.focus(); return; }
+  save.name = name; persist();
+  Sound.click();
+  go('home');
+}
+function confirmReset(){
+  openModal('RESET GAME',
+    '<p style="margin:0 0 8px">คุณต้องการลบข้อมูลเกมทั้งหมดหรือไม่?</p><p class="small" style="margin:0;color:#b8c0ff">XP, เหรียญ, ด่านที่ปลดล็อก, คำศัพท์, Achievement และ Leaderboard จะถูกลบถาวร</p>',
+    [{label: 'ยกเลิก'}, {label: 'ลบข้อมูลทั้งหมด', cls: 'btn-danger', onClick: doReset}]);
+}
+function doReset(){
+  try{ localStorage.removeItem(KEY); localStorage.removeItem(LB_KEY); }catch(e){}
+  stopTimer(); G = null; lastRun = null; vocabFilter = 'all';
+  try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
+  save = defaultSave();
+  $('nameInput').value = '';
+  show('welcome');
+  toast('ลบข้อมูลเกมเรียบร้อยแล้ว');
+}
+function confirmLeaveGame(){
+  openModal('ออกจากด่าน?', 'รอบนี้จะจบทันที (XP และเหรียญที่ได้มาแล้วยังอยู่) แต่จะไม่ถูกบันทึกลง Leaderboard',
+    [{label: 'เล่นต่อ'}, {label: 'ออกจากด่าน', cls: 'btn-danger', onClick: () => { stopTimer(); if(G) G.over = true; G = null; go('home'); }}]);
+}
+function goHome(){ if(currentScreen === 'game' && G && !G.over) confirmLeaveGame(); else go('home'); }
+function renamePlayer(){
+  openModal('เปลี่ยนชื่อผู้เล่น', '<input id="mInput" maxlength="16" value="' + esc(save.name) + '" autocomplete="off">',
+    [{label: 'ยกเลิก'}, {label: 'บันทึก', cls: 'btn-green', onClick: () => {
+      const v = $('mInput').value.trim().slice(0, 16);
+      if(!v){ toast('ชื่อห้ามว่าง'); return false; }
+      save.name = v; persist(); renderProfile(); updateTopbar();
+    }}]);
+  setTimeout(() => { const i = $('mInput'); if(i){ i.focus(); i.select(); } }, 50);
+}
+
+/* =====================================================================
+   INIT — ผูกอีเวนต์ทั้งหมด
+   ===================================================================== */
+function init(){
+  resizeCanvases();
+  window.addEventListener('resize', resizeCanvases);
+  requestAnimationFrame(bgLoop);
+
+  $('nameInput').value = save.name || '';
+  $('startBtn').onclick = startFromWelcome;
+  $('nameInput').addEventListener('keydown', e => { if(e.key === 'Enter') startFromWelcome(); });
+
+  $('brandBtn').onclick = goHome;
+  $('homeBtn').onclick = goHome;
+  $('soundBtn').onclick = () => { save.sound = !save.sound; persist(); updateTopbar(); if(save.sound) Sound.click(); toast(save.sound ? '🔊 เปิดเสียงแล้ว' : '🔇 ปิดเสียงแล้ว'); };
+  $('resetBtn').onclick = confirmReset;
+  $('resetBtn2').onclick = confirmReset;
+  $('renameBtn').onclick = renamePlayer;
+  $('reviewBtn').onclick = () => {
+    if(!save.wrongWords.length){ toast('ยังไม่มีคำที่ต้องทบทวน — เยี่ยมมาก! 🎉'); return; }
+    Sound.click(); startStage('review');
+  };
+  document.querySelectorAll('[data-hint]').forEach(b => b.onclick = () => useHint(b.dataset.hint));
+  $('rAgain').onclick = () => { if(lastRun) startStage(lastRun.stageId); };
+  $('rNext').onclick = () => { if(lastRun && typeof lastRun.stageId === 'number') startStage(lastRun.stageId + 1); };
+
+  // ปุ่มนำทาง / ปุ่มออกเสียง (event delegation)
+  document.addEventListener('click', e => {
+    const say = e.target.closest('[data-say]');
+    if(say){ speak(say.dataset.say); return; }
+    const nav = e.target.closest('[data-go]');
+    if(nav){ Sound.click(); go(nav.dataset.go); }
+  });
+  $('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+
+  // คีย์ลัด: 1-4 / A-D ตอบ, Enter/Space ข้อต่อไป, Esc ปิดโมดัล
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && $('modal').classList.contains('open')){ closeModal(); return; }
+    if($('modal').classList.contains('open')) return;
+    if(currentScreen !== 'game' || !G || G.over) return;
+    if(e.target && e.target.tagName === 'INPUT') return;
+    const k = e.key.toLowerCase();
+    const idx = '1234'.indexOf(k) >= 0 && k.length === 1 ? '1234'.indexOf(k) : ('abcd'.indexOf(k) >= 0 && k.length === 1 ? 'abcd'.indexOf(k) : -1);
+    if(idx >= 0 && !G.locked){ answer(idx); return; }
+    if((e.key === 'Enter' || e.key === ' ') && G.locked && !(e.target && e.target.tagName === 'BUTTON')){ e.preventDefault(); next(); }
+  });
+
+  // เอียงการ์ดคำถามตามเมาส์/นิ้ว (เอฟเฟกต์ 3D)
+  const qs = $('qStage');
+  qs.addEventListener('pointermove', e => {
+    if(reduceMotion || e.pointerType === 'touch') return;
+    const r = qs.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    $('qCard').style.setProperty('--ry', (x * 14) + 'deg');
+    $('qCard').style.setProperty('--rx', (-y * 10) + 'deg');
+  });
+  qs.addEventListener('pointerleave', () => { $('qCard').style.setProperty('--ry', '0deg'); $('qCard').style.setProperty('--rx', '0deg'); });
+
+  // หยุดจับเวลาเมื่อสลับแท็บ ไม่ให้เสียหัวใจโดยไม่ตั้งใจ
+  let hiddenAt = 0, hiddenWall = 0;
+  document.addEventListener('visibilitychange', () => {
+    if(!G || G.over) return;
+    if(document.hidden){ hiddenAt = performance.now(); hiddenWall = Date.now(); }
+    else if(hiddenAt){ G.qStart += performance.now() - hiddenAt; G.startTime += Date.now() - hiddenWall; hiddenAt = 0; }
+  });
+  if('speechSynthesis' in window){ try{ speechSynthesis.getVoices(); }catch(e){} }
+
+  updateTopbar();
+  show('welcome');
+  if(save.name) toast('ยินดีต้อนรับกลับ, ' + save.name + '! กด “เริ่มเกม” เพื่อเล่นต่อ');
+}
+init();
+</script>
+</body>
+</html>
